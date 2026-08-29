@@ -24,8 +24,54 @@ body {
   justify-content:space-evenly;
   align-items: center;
   flex:content;
-  
-  
+  font-family:'Courier New', Courier, monospace ;
 
 }
 
+.titolo {
+  text-align: center;
+}
+
+
+.enigma-card{
+  display: flex;
+  flex-direction: column;
+
+  
+  padding-bottom: 10px;
+  padding-right: 10px;
+
+  width: 400px;
+  height: 300px;
+  border: 2px solid red;
+  border-radius: 5%;
+  
+
+
+}
+
+.enigma-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 400px);
+  gap: 100px;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+
+.bottone{
+  width: 100px;
+  height: 50px;
+  background-color: rgba(255, 0, 0, 0.404);
+  border: 2px solid black;
+  border-radius: 5px;
+
+  align-self: flex-end;
+  margin-top: auto;
+    
+}
+
+.nomeEnigma {
+  width: 100%;
+  text-align: center;
+}
