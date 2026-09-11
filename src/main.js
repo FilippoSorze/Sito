@@ -8,7 +8,7 @@ document.querySelector('#app').innerHTML = `
 
     <main class="enigma-grid">
     <div class="enigma-card" data-enigma="1"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 1</div><button class="bottone">Play</button></div>
-    <div class="enigma-card" data-enigma="2"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 2</div><button class="bottone">Play</button></div>
+    <div class="enigma-card" data-enigma="2"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 2</div><button class="bottone2">Play</button></div>
     <div class="enigma-card" data-enigma="3"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 3</div><button class="bottone">Play</button></div>
     <div class="enigma-card" data-enigma="4"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 4</div><button class="bottone">Play</button></div>
     <div class="enigma-card" data-enigma="5"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 5</div><button class="bottone">Play</button></div>
@@ -19,6 +19,71 @@ document.querySelector('#app').innerHTML = `
 }
 
 mostraHub()
+
+function mostraEnigma2() {
+document.querySelector('#app').innerHTML = `
+<h1>ciao</h1>
+`
+
+const valori = [
+  'https://picsum.photos/200?random=1',
+  'https://picsum.photos/200?random=2',
+  'https://picsum.photos/200?random=3',
+  'https://picsum.photos/200?random=4',
+  'https://picsum.photos/200?random=5',
+  'https://picsum.photos/200?random=6',
+  'https://picsum.photos/200?random=7',
+  'https://picsum.photos/200?random=8'
+]
+
+
+
+let mazzo = [
+  { id: 0, valore: 'foto1', scoperta: false, abbinata: false },
+  { id: 1, valore: 'foto1', scoperta: false, abbinata: false },
+  { id: 2, valore: 'foto2', scoperta: false, abbinata: false },
+  { id: 3, valore: 'foto2', scoperta: false, abbinata: false },
+  { id: 4, valore: 'foto3', scoperta: false, abbinata: false },
+  { id: 5, valore: 'foto3', scoperta: false, abbinata: false },
+  { id: 6, valore: 'foto4', scoperta: false, abbinata: false },
+  { id: 7, valore: 'foto4', scoperta: false, abbinata: false },
+  { id: 8, valore: 'foto5', scoperta: false, abbinata: false },
+  { id: 9, valore: 'foto5', scoperta: false, abbinata: false },
+  { id: 10, valore: 'foto6', scoperta: false, abbinata: false },
+  { id: 11, valore: 'foto6', scoperta: false, abbinata: false },
+  { id: 12, valore: 'foto7', scoperta: false, abbinata: false },
+  { id: 13, valore: 'foto7', scoperta: false, abbinata: false },
+  { id: 14, valore: 'foto8', scoperta: false, abbinata: false },
+  { id: 15, valore: 'foto8', scoperta: false, abbinata: false }
+]
+
+
+
+function mescola(mazzo) {
+  for (let i = mazzo.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = mazzo[i]
+    mazzo[i] = mazzo[j]
+    mazzo[j] = temp
+  }
+  return mazzo
+}
+
+mazzo = mescola(mazzo)
+console.log(mazzo)
+
+
+}
+
+
+
+
+
+
+
+
+
+
 function mostraEnigma1() {
   document.querySelector('#app').innerHTML = `
     <canvas id="gioco" width="2000" height="500"></canvas>
@@ -153,3 +218,4 @@ if (
 loop()
 }
 document.querySelector('.bottone').addEventListener('click', mostraEnigma1)
+document.querySelector('.bottone2').addEventListener('click', mostraEnigma2)
