@@ -21,10 +21,19 @@ document.querySelector('#app').innerHTML = `
 mostraHub()
 
 function mostraEnigma2() {
-document.querySelector('#app').innerHTML = `
-<h1>ciao</h1>
-`
+document.querySelector('#app').addEventListener('click', function(event) {
+  const elementoCarta = event.target.closest('.carta')
+  if (!elementoCarta) return
 
+  const id = Number(elementoCarta.dataset.id)
+  const cartaCliccata = mazzo.find(function(c) {
+    return c.id === id
+  })
+  
+  cartaCliccata.scoperta = true
+  mostraCarta()
+  console.log(cartaCliccata)
+})
 const valori = [
   'https://picsum.photos/200?random=1',
   'https://picsum.photos/200?random=2',
@@ -69,17 +78,27 @@ function mescola(mazzo) {
   return mazzo
 }
 
-mazzo = mescola(mazzo)
-console.log(mazzo)
+function mostraCarta() {
+const stampa = mazzo.map(function(carta) {
+  return `<div class="carta" data-id="${carta.id}">?</div>`
+})
+
+const html = stampa.join('')
+
+
+
+document.querySelector('#app').innerHTML = `<div class="memory-grid">${html}</div>`
+
+
 
 
 }
 
+mazzo = mescola(mazzo)
+mostraCarta()
+console.log(mazzo)
 
-
-
-
-
+}
 
 
 
