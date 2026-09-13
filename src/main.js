@@ -106,6 +106,42 @@ function mostraEnigma2() {
   }
 }
 
+
+function mostraEnigma3() {
+  const domande = [
+    {
+      immagine: 'https://picsum.photos/200',
+      opzioni: ['Opzione 1', 'Opzione 2', 'Opzione 3'],
+      corretta: 'Opzione 2'
+    },
+      {
+      immagine: 'https://picsum.photos/200',
+      opzioni: ['Opzione 1', 'Opzione 2', 'Opzione 3'],
+      corretta: 'Opzione 2'
+    },  {
+      immagine: 'https://picsum.photos/200',
+      opzioni: ['Opzione 1', 'Opzione 2', 'Opzione 3'],
+      corretta: 'Opzione 1'
+    }
+  ]
+}
+
+function mostraDomanda() {
+  const domandaCorrente = domande[indiceAttuale]
+
+  const opzioniHTML = domandaCorrente.opzioni.map(function (nome) {
+    return `<div class="opzione-quiz" data-nome="${nome}">${nome}</div>`
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="quiz-container">
+      <img src="${domandaCorrente.immagine}" class="foto-giocatore" />
+      <div class="opzioni-grid">${opzioniHTML}</div>
+    </div>
+  `
+}
+
+mostraDomanda()
 function gestisciClickCarta(elementoCarta) {
   if (bloccatoMemory) return // ignora i click mentre aspettiamo di ricoprire una coppia sbagliata
 
@@ -259,6 +295,8 @@ document.querySelector('#app').addEventListener('click', function (event) {
     const numero = card.dataset.enigma
     if (numero === '1') mostraEnigma1()
     else if (numero === '2') mostraEnigma2()
+    else if (numero === '3') mostraEnigma3()
+    
     else console.log('Enigma ' + numero + ' non ancora implementato')
     return
   }
