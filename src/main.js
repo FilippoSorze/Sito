@@ -106,28 +106,30 @@ function mostraEnigma2() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// ENIGMA 3 (chi è questo giocatore?): stato definito FUORI dalla funzione,
+// come per il memory, così ricorda a che domanda eri arrivato anche se esci
+// e rientri, e ricorda se lo hai già completato.
+// ---------------------------------------------------------------------------
 
-function mostraEnigma3() {
-  const domande = [
-    {
-      immagine: 'https://picsum.photos/200',
-      opzioni: ['Opzione 1', 'Opzione 2', 'Opzione 3'],
-      corretta: 'Opzione 2'
-    },
-      {
-      immagine: 'https://picsum.photos/200',
-      opzioni: ['Opzione 1', 'Opzione 2', 'Opzione 3'],
-      corretta: 'Opzione 2'
-    },  {
-      immagine: 'https://picsum.photos/200',
-      opzioni: ['Opzione 1', 'Opzione 2', 'Opzione 3'],
-      corretta: 'Opzione 1'
-    }
-  ]
-}
+const domandeEnigma3 = [
+  { immagine: 'https://picsum.photos/300?random=1', opzioni: ['Nome1', 'Nome2', 'Nome3', 'Nome4'], corretta: 'Nome1' },
+  { immagine: 'https://picsum.photos/300?random=2', opzioni: ['Nome5', 'Nome6', 'Nome7', 'Nome8'], corretta: 'Nome6' },
+  { immagine: 'https://picsum.photos/300?random=3', opzioni: ['Nome9', 'Nome10', 'Nome11', 'Nome12'], corretta: 'Nome9' },
+  { immagine: 'https://picsum.photos/300?random=4', opzioni: ['Nome13', 'Nome14', 'Nome15', 'Nome16'], corretta: 'Nome14' },
+  { immagine: 'https://picsum.photos/300?random=5', opzioni: ['Nome17', 'Nome18', 'Nome19', 'Nome20'], corretta: 'Nome17' },
+  { immagine: 'https://picsum.photos/300?random=6', opzioni: ['Nome21', 'Nome22', 'Nome23', 'Nome24'], corretta: 'Nome23' },
+  { immagine: 'https://picsum.photos/300?random=7', opzioni: ['Nome25', 'Nome26', 'Nome27', 'Nome28'], corretta: 'Nome25' },
+  { immagine: 'https://picsum.photos/300?random=8', opzioni: ['Nome29', 'Nome30', 'Nome31', 'Nome32'], corretta: 'Nome30' },
+  { immagine: 'https://picsum.photos/300?random=9', opzioni: ['Nome33', 'Nome34', 'Nome35', 'Nome36'], corretta: 'Nome33' },
+  { immagine: 'https://picsum.photos/300?random=10', opzioni: ['Nome37', 'Nome38', 'Nome39', 'Nome40'], corretta: 'Nome38' }
+]
 
-function mostraDomanda() {
-  const domandaCorrente = domande[indiceAttuale]
+let indiceAttuale3 = 0
+let enigma3Completato = false
+
+function disegnaDomanda3() {
+  const domandaCorrente = domandeEnigma3[indiceAttuale3]
 
   const opzioniHTML = domandaCorrente.opzioni.map(function (nome) {
     return `<div class="opzione-quiz" data-nome="${nome}">${nome}</div>`
@@ -141,7 +143,53 @@ function mostraDomanda() {
   `
 }
 
-mostraDomanda()
+function mostraMessaggioVittoriaEnigma3() {
+  document.querySelector('#app').innerHTML += `
+    <div class="overlay-vittoria">
+      <div class="messaggio-vittoria">
+        Completato!! [TESTO DEL CODICE DA PERSONALIZZARE]
+        <br>
+        <button class="vai-home">Vai alla home</button>
+      </div>
+    </div>
+  `
+}
+
+function mostraEnigma3() {
+  disegnaDomanda3()
+
+  // se il quiz era già stato completato in precedenza, mostra subito il messaggio
+  if (enigma3Completato) {
+    mostraMessaggioVittoriaEnigma3()
+  }
+}
+
+function gestisciClickOpzione(elementoOpzione) {
+  const domandaCorrente = domandeEnigma3[indiceAttuale3]
+  const nomeScelto = elementoOpzione.dataset.nome
+
+  if (nomeScelto === domandaCorrente.corretta) {
+    // risposta corretta: colora di verde, aspetta un attimo, poi avanza
+    elementoOpzione.classList.add('corretta')
+
+    setTimeout(function () {
+      indiceAttuale3 = indiceAttuale3 + 1
+
+      if (indiceAttuale3 >= domandeEnigma3.length) {
+        // era l'ultima domanda: quiz completato
+        enigma3Completato = true
+        mostraMessaggioVittoriaEnigma3()
+      } else {
+        disegnaDomanda3()
+      }
+    }, 600)
+  } else {
+    // risposta sbagliata: si riparte dalla prima domanda
+    indiceAttuale3 = 0
+    disegnaDomanda3()
+  }
+}
+
 function gestisciClickCarta(elementoCarta) {
   if (bloccatoMemory) return // ignora i click mentre aspettiamo di ricoprire una coppia sbagliata
 
@@ -296,7 +344,6 @@ document.querySelector('#app').addEventListener('click', function (event) {
     if (numero === '1') mostraEnigma1()
     else if (numero === '2') mostraEnigma2()
     else if (numero === '3') mostraEnigma3()
-    
     else console.log('Enigma ' + numero + ' non ancora implementato')
     return
   }

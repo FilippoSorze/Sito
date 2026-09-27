@@ -171,3 +171,44 @@ body {
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
+
+.quiz-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.foto-giocatore {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid black;
+  margin-bottom: 30px;
+}
+
+.opzioni-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 200px);
+  gap: 20px;
+}
+
+.opzione-quiz {
+  padding: 15px;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 8px;
+  background-color: lightblue;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.opzione-quiz:hover {
+  background-color: darkblue;
+  color: white;
+}
+
+.opzione-quiz.corretta {
+  background-color: lightgreen;
+}
