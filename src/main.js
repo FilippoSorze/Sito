@@ -481,8 +481,8 @@ function mescola(array) {
 }
 
 // =============================================================================
-// ENIGMA 1 (puzzle a incastro): una vostra foto divisa in 9 pezzi (griglia
-// 3x3), mescolati in un "vassoio"; si trascinano — con mouse O con un dito su
+// ENIGMA 1 (puzzle a incastro): una vostra foto divisa in 16 pezzi (griglia
+// 4x4), mescolati in un "vassoio"; si trascinano — con mouse O con un dito su
 // smartphone — nella griglia vuota, nel posto giusto.
 //
 // Il trascinamento è gestito "a mano" con i Pointer Event (pointerdown /
@@ -495,16 +495,30 @@ function mescola(array) {
 // stessa immagine intera come sfondo, spostata con background-position —
 // lo stesso trucco già accennato nel commento dell'Enigma 5.
 //
+// Due dettagli aggiunti apposta:
+// 1) "latoPezzoPuzzle1" è una dimensione FISSA in pixel, usata sia per i
+//    pezzi nel vassoio sia per quelli nella griglia: così un pezzo non
+//    cambia mai grandezza spostandosi, e la griglia stessa ha sempre
+//    esattamente la dimensione giusta per contenerli (calcolata da JS,
+//    non un numero fisso scritto a mano nel CSS).
+// 2) Ogni pezzo ha una vera forma a incastro (linguette/incavi), disegnata
+//    con un "ritaglio" CSS (clip-path) generato automaticamente: i bordi
+//    interni della griglia vengono decisi una sola volta quando il puzzle
+//    viene creato, così il pezzo A e il pezzo B che si toccano hanno
+//    sempre forme complementari (dove uno sporge, l'altro ha l'incavo).
+//
 // *** DA PERSONALIZZARE ***: immaginePuzzle1 con una vostra foto vera.
 // =============================================================================
 
 const immaginePuzzle1 = 'https://picsum.photos/450?random=400'
-const dimensionePuzzle1 = 3 // griglia 3x3 = 9 pezzi
+const dimensionePuzzle1 = 4 // griglia 4x4 = 16 pezzi
+const latoPezzoPuzzle1 = 76 // dimensione fissa, in pixel, di OGNI pezzo
 
 let enigma1GiaCreato = false
 let enigma1Completato = false
-let slotPuzzle1 = [] // 9 posizioni: null (vuota) oppure l'id (0-8) del pezzo che occupa quella casella
+let slotPuzzle1 = [] // 16 posizioni: null (vuota) oppure l'id del pezzo che occupa quella casella
 let vassoioPuzzle1 = [] // id dei pezzi ancora nel vassoio, mescolati
+let formePezziPuzzle1 = [] // per ogni pezzo, {sopra,sotto,sinistra,destra}: 0 = bordo dritto, 1 = linguetta, -1 = incavo
 
 function creaPuzzle1() {
   const totalePezzi = dimensionePuzzle1 * dimensionePuzzle1
@@ -512,24 +526,121 @@ function creaPuzzle1() {
   vassoioPuzzle1 = mescola(
     Array.from({ length: totalePezzi }, function (_, i) { return i })
   )
+
+  // Decidiamo, UNA SOLA VOLTA, se ogni bordo INTERNO della griglia ha una
+  // linguetta o un incavo, così i due pezzi che condividono quel bordo
+  // ottengono forme opposte (dove uno sporge, l'altro è incavato: combaciano).
+  const bordiOrizzontali = [] // bordiOrizzontali[riga][colonna]: confine tra la riga e quella sotto
+  for (let riga = 0; riga < dimensionePuzzle1 - 1; riga++) {
+    bordiOrizzontali.push([])
+    for (let colonna = 0; colonna < dimensionePuzzle1; colonna++) {
+      bordiOrizzontali[riga].push(Math.random() < 0.5 ? 1 : -1)
+    }
+  }
+
+  const bordiVerticali = [] // bordiVerticali[riga][colonna]: confine tra la colonna e quella a destra
+  for (let riga = 0; riga < dimensionePuzzle1; riga++) {
+    bordiVerticali.push([])
+    for (let colonna = 0; colonna < dimensionePuzzle1 - 1; colonna++) {
+      bordiVerticali[riga].push(Math.random() < 0.5 ? 1 : -1)
+    }
+  }
+
+  formePezziPuzzle1 = []
+  for (let idPezzo = 0; idPezzo < totalePezzi; idPezzo++) {
+    const riga = Math.floor(idPezzo / dimensionePuzzle1)
+    const colonna = idPezzo % dimensionePuzzle1
+
+    formePezziPuzzle1.push({
+      sopra: riga === 0 ? 0 : -bordiOrizzontali[riga - 1][colonna],
+      sotto: riga === dimensionePuzzle1 - 1 ? 0 : bordiOrizzontali[riga][colonna],
+      sinistra: colonna === 0 ? 0 : -bordiVerticali[riga][colonna - 1],
+      destra: colonna === dimensionePuzzle1 - 1 ? 0 : bordiVerticali[riga][colonna]
+    })
+  }
+}
+
+// Disegna UN lato del pezzo, da (x1,y1) a (x2,y2): se "tipo" è 0 resta un
+// bordo dritto; altrimenti ci costruisce sopra una "linguetta" rotonda che
+// sporge verso l'esterno (tipo 1) o un incavo verso l'interno (tipo -1).
+function segmentoBordoPuzzle1(x1, y1, x2, y2, tipo) {
+  if (tipo === 0) {
+    return ` L ${x2} ${y2}`
+  }
+
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const lunghezza = Math.hypot(dx, dy)
+  const ux = dx / lunghezza
+  const uy = dy / lunghezza
+  // Il percorso del pezzo gira in senso orario: la normale che punta verso
+  // l'ESTERNO del pezzo si ottiene ruotando la direzione del bordo di -90°.
+  const nx = uy
+  const ny = -ux
+
+  // Raggio della linguetta: con due curve di Bézier cubiche (ognuna un
+  // quarto di cerchio, costante di kappa 0.5523) disegniamo una vera
+  // semicirconferenza invece di una punta aguzza, così anche quando due
+  // incavi si trovano su lati opposti dello stesso pezzo non si "mangiano"
+  // a vicenda creando la forma a clessidra.
+  const raggio = lunghezza * 0.14
+  const k = 0.5523
+  const verso = tipo
+
+  const medioX = (x1 + x2) / 2
+  const medioY = (y1 + y2) / 2
+
+  const collo1 = { x: medioX - ux * raggio, y: medioY - uy * raggio }
+  const collo2 = { x: medioX + ux * raggio, y: medioY + uy * raggio }
+  const apice = { x: medioX + nx * raggio * verso, y: medioY + ny * raggio * verso }
+
+  const c1 = { x: collo1.x + nx * raggio * verso * k, y: collo1.y + ny * raggio * verso * k }
+  const c2 = { x: apice.x - ux * raggio * k, y: apice.y - uy * raggio * k }
+  const c3 = { x: apice.x + ux * raggio * k, y: apice.y + uy * raggio * k }
+  const c4 = { x: collo2.x + nx * raggio * verso * k, y: collo2.y + ny * raggio * verso * k }
+
+  return ` L ${collo1.x} ${collo1.y}` +
+    ` C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${apice.x} ${apice.y}` +
+    ` C ${c3.x} ${c3.y} ${c4.x} ${c4.y} ${collo2.x} ${collo2.y}` +
+    ` L ${x2} ${y2}`
+}
+
+// Costruisce l'intero contorno del pezzo (i 4 lati, uno dopo l'altro) e lo
+// restituisce come valore pronto per la proprietà CSS clip-path.
+function generaClipPathPezzo(idPezzo) {
+  const forma = formePezziPuzzle1[idPezzo]
+  const L = latoPezzoPuzzle1
+
+  let percorso = 'M 0 0'
+  percorso += segmentoBordoPuzzle1(0, 0, L, 0, forma.sopra)
+  percorso += segmentoBordoPuzzle1(L, 0, L, L, forma.destra)
+  percorso += segmentoBordoPuzzle1(L, L, 0, L, forma.sotto)
+  percorso += segmentoBordoPuzzle1(0, L, 0, 0, forma.sinistra)
+  percorso += ' Z'
+
+  return `path('${percorso}')`
 }
 
 // Calcola lo sfondo del pezzo "idPezzo": l'immagine intera, ingrandita e
-// spostata in modo che si veda solo il riquadro corrispondente a quel pezzo.
+// spostata in modo che si veda solo il riquadro corrispondente a quel pezzo,
+// più il ritaglio (clip-path) che gli dà la forma a incastro.
 function stileSfondoPezzoPuzzle1(idPezzo) {
   const riga = Math.floor(idPezzo / dimensionePuzzle1)
   const colonna = idPezzo % dimensionePuzzle1
   const passo = 100 / (dimensionePuzzle1 - 1)
-  return `background-image:url('${immaginePuzzle1}'); background-size:${dimensionePuzzle1 * 100}% ${dimensionePuzzle1 * 100}%; background-position:${colonna * passo}% ${riga * passo}%;`
+  const clipPath = generaClipPathPezzo(idPezzo)
+
+  return `width:${latoPezzoPuzzle1}px; height:${latoPezzoPuzzle1}px; background-image:url('${immaginePuzzle1}'); background-size:${dimensionePuzzle1 * 100}% ${dimensionePuzzle1 * 100}%; background-position:${colonna * passo}% ${riga * passo}%; clip-path:${clipPath}; -webkit-clip-path:${clipPath};`
 }
 
 function disegnaPuzzle1() {
   const slotHTML = slotPuzzle1.map(function (idPezzo, indice) {
+    const stileSlot = `width:${latoPezzoPuzzle1}px; height:${latoPezzoPuzzle1}px;`
     if (idPezzo === null) {
-      return `<div class="slot-puzzle1" data-indice="${indice}"></div>`
+      return `<div class="slot-puzzle1" data-indice="${indice}" style="${stileSlot}"></div>`
     }
     return `
-      <div class="slot-puzzle1" data-indice="${indice}">
+      <div class="slot-puzzle1" data-indice="${indice}" style="${stileSlot}">
         <div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="slot" data-da-indice="${indice}" style="${stileSfondoPezzoPuzzle1(idPezzo)}"></div>
       </div>
     `
@@ -539,11 +650,13 @@ function disegnaPuzzle1() {
     return `<div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="vassoio" style="${stileSfondoPezzoPuzzle1(idPezzo)}"></div>`
   }).join('')
 
+  const latoGriglia = dimensionePuzzle1 * latoPezzoPuzzle1
+
   document.querySelector('#app').innerHTML = `
     <div class="puzzle1-container">
       <p class="istruzioni-puzzle1">Trascina i pezzi nella griglia per ricomporre la foto</p>
       <div class="puzzle1-area">
-        <div class="griglia-puzzle1" style="grid-template-columns:repeat(${dimensionePuzzle1}, 1fr)">${slotHTML}</div>
+        <div class="griglia-puzzle1" style="grid-template-columns:repeat(${dimensionePuzzle1}, ${latoPezzoPuzzle1}px); grid-template-rows:repeat(${dimensionePuzzle1}, ${latoPezzoPuzzle1}px); width:${latoGriglia}px; height:${latoGriglia}px;">${slotHTML}</div>
         <div class="vassoio-puzzle1">${vassoioHTML}</div>
       </div>
     </div>

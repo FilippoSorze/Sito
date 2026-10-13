@@ -526,56 +526,52 @@ strong {
   gap: 36px;
 }
 
+/* La dimensione (width/height) di griglia, slot e pezzi arriva inline da
+   JS — qui restano solo gap, sfondo e decorazioni, non più numeri fissi:
+   così la griglia è sempre esattamente grande quanto i pezzi che contiene,
+   qualunque sia dimensionePuzzle1. */
+
 .griglia-puzzle1 {
   display: grid;
-  gap: 3px;
-  width: 300px;
-  height: 300px;
+  gap: 15px;
   background-color: var(--ink);
-  padding: 3px;
+  padding: 15px;
   border-radius: 4px;
   box-shadow: var(--ombra-soft);
 }
 
 .slot-puzzle1 {
   background-color: var(--paper-dark);
-  border-radius: 2px;
 }
 
 .vassoio-puzzle1 {
-  display: grid;
-  grid-template-columns: repeat(3, 72px);
-  gap: 8px;
-  width: 232px;
-  min-height: 72px;
-  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 14px;
+  max-width: 320px;
+  padding: 14px;
   background-color: var(--paper-dark);
   border: 1px dashed var(--gold);
   border-radius: 4px;
 }
 
 .pezzo-puzzle1 {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 2px;
-  border: 1px solid rgba(43, 31, 46, 0.25);
   cursor: grab;
   touch-action: none; /* evita che il browser scrolli la pagina mentre si trascina col dito */
-}
-
-.slot-puzzle1 .pezzo-puzzle1 {
-  width: 100%;
-  height: 100%;
-  border-radius: 0;
+  /* Il border, a differenza di outline, viene ritagliato insieme al resto
+     dal clip-path: segue quindi la sagoma a incastro invece di restare un
+     rettangolo. drop-shadow (non box-shadow) fa lo stesso con l'ombra. */
+  border: 1.5px solid rgba(43, 31, 46, 0.3);
+  filter: drop-shadow(0 3px 5px rgba(43, 31, 46, 0.35));
 }
 
 .pezzo-puzzle1-trascinato {
   position: fixed;
   z-index: 1000;
   cursor: grabbing;
-  box-shadow: var(--ombra-forte);
   transform: scale(1.08) rotate(-2deg);
-  opacity: 0.95;
+  filter: drop-shadow(0 8px 14px rgba(43, 31, 46, 0.5));
 }
 
 /* =============================================================================
