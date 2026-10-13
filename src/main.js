@@ -1,5 +1,226 @@
 import './style.css'
 
+// =============================================================================
+// PAGINA "SPIEGAZIONE": spiega a lei come funziona il sito, prima che inizi
+// a giocare. Contenuto generico (le regole del gioco), nessun placeholder
+// da personalizzare qui — se vuoi cambiare qualche frase, modifica pure il
+// testo qui sotto.
+// =============================================================================
+
+function mostraSpiegazione() {
+  document.querySelector('#app').innerHTML = `
+    <div class="pagina-spiegazione">
+      <h1>Come funziona</h1>
+
+      <p>Nella home trovi <strong>6 enigmi</strong>. Ogni enigma è un piccolo gioco diverso dagli altri: un cifrario, un memory, un quiz, una linea del tempo, un puzzle scorrevole e un gioco di parole.</p>
+
+      <p>Risolvendo un enigma, alla fine ti verrà mostrata <strong>una cifra</strong> di un codice segreto a 6 numeri. Ogni enigma rivela una cifra diversa, in base alla sua posizione: il primo enigma dà la prima cifra, il secondo la seconda, e così via.</p>
+
+      <p>Il tuo progresso resta salvato: puoi tornare alla home in qualsiasi momento e rientrare in un enigma già risolto senza perdere nulla.</p>
+
+      <p>Quando avrai raccolto <strong>tutte e 6 le cifre</strong>, torna nella home e inseriscile nel campo apposito, in fondo alla pagina, sotto gli enigmi. Se il codice è corretto... si apre qualcosa di speciale.</p>
+
+      <p>Buon divertimento! ❤</p>
+
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
+// =============================================================================
+// PAGINA "CHI SIAMO": contenuto personale su di voi due.
+//
+// *** DA PERSONALIZZARE ***: fotoChiSiamo (una vostra foto vera) e
+// testoChiSiamo (raccontate chi siete, da quanto state insieme, ecc.).
+// =============================================================================
+
+const fotoChiSiamo = 'https://picsum.photos/500?random=200'
+const testoChiSiamo = `
+  [TESTO DA PERSONALIZZARE — raccontate chi siete: i vostri nomi, da quanto
+  tempo state insieme, qualcosa che vi rappresenta come coppia. Puoi scrivere
+  più paragrafi, basta andare a capo qui dentro.]
+`
+
+function mostraChiSiamo() {
+  document.querySelector('#app').innerHTML = `
+    <div class="pagina-chi-siamo">
+      <h1>Chi siamo</h1>
+      <div class="foto-chi-siamo-container">
+        <img src="${fotoChiSiamo}" class="foto-chi-siamo" alt="Noi due" />
+      </div>
+      <p class="testo-chi-siamo">${testoChiSiamo}</p>
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
+// =============================================================================
+// PAGINA "CONTATTI": dove trovarti/contattarti (email, social, numero...).
+//
+// *** DA PERSONALIZZARE ***: i valori in "contatti" sotto — metti solo
+// quelli che vuoi mostrare, puoi anche rimuovere le righe che non ti servono.
+// =============================================================================
+
+const contatti = [
+  { etichetta: 'Email', valore: '[EMAIL DA PERSONALIZZARE]' },
+  { etichetta: 'Instagram', valore: '[PROFILO INSTAGRAM DA PERSONALIZZARE]' },
+  { etichetta: 'Telefono', valore: '[NUMERO DA PERSONALIZZARE]' }
+]
+
+// =============================================================================
+// PAGINA "COSE": un cestino da picnic con dentro vari oggetti. Passando il
+// mouse su un oggetto (tooltip in puro CSS, come per i puntini dei viaggi)
+// appare una spiegazione di cosa è o cosa significa.
+//
+// *** DA PERSONALIZZARE ***: modifica/aggiungi oggetti in "oggettiCestino" —
+// nome, immagine (sostituisci con le foto vere degli oggetti), posizione
+// (top/left in percentuale, rispetto al riquadro del cestino) e la
+// spiegazione. Idealmente "immagineCestino" dovrebbe essere un'immagine del
+// cestino con sfondo trasparente (PNG), così gli oggetti sembrano dentro.
+// =============================================================================
+
+const immagineCestino = 'https://picsum.photos/500?random=300'
+
+const oggettiCestino = [
+  { nome: 'Oggetto 1', immagine: 'https://picsum.photos/100?random=301', top: 15, left: 25, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 2', immagine: 'https://picsum.photos/100?random=302', top: 18, left: 50, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 3', immagine: 'https://picsum.photos/100?random=303', top: 22, left: 75, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 4', immagine: 'https://picsum.photos/100?random=304', top: 32, left: 15, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 5', immagine: 'https://picsum.photos/100?random=305', top: 35, left: 38, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 6', immagine: 'https://picsum.photos/100?random=306', top: 33, left: 62, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 7', immagine: 'https://picsum.photos/100?random=307', top: 30, left: 85, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 8', immagine: 'https://picsum.photos/100?random=308', top: 48, left: 28, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 9', immagine: 'https://picsum.photos/100?random=309', top: 50, left: 52, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' },
+  { nome: 'Oggetto 10', immagine: 'https://picsum.photos/100?random=310', top: 47, left: 74, spiegazione: '[SPIEGAZIONE DA PERSONALIZZARE]' }
+]
+
+function mostraCose() {
+  const oggettiHTML = oggettiCestino.map(function (oggetto) {
+    return `
+      <div class="oggetto-cestino" style="top:${oggetto.top}%; left:${oggetto.left}%">
+        <img src="${oggetto.immagine}" class="immagine-oggetto" alt="${oggetto.nome}" />
+        <span class="tooltip-oggetto">${oggetto.spiegazione}</span>
+      </div>
+    `
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="pagina-cose">
+      <h1>Cose</h1>
+      <div class="cestino-container">
+        <img src="${immagineCestino}" class="immagine-cestino" alt="Cestino da picnic" />
+        ${oggettiHTML}
+      </div>
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
+// =============================================================================
+// "QUANTO MI CONOSCI": quiz extra, puramente per divertimento — NON fa parte
+// del codice segreto (non è uno dei 6 enigmi), è un giochino a sé. Stessa
+// meccanica a scelta multipla del quiz dell'Enigma 3, ma qui risponde a
+// TUTTE le domande di fila (una risposta sbagliata non fa ricominciare da
+// capo) e alla fine vede solo il punteggio finale.
+//
+// *** DA PERSONALIZZARE ***: le domande/opzioni/risposta corretta in
+// "domandeQuantoMiConosci".
+// =============================================================================
+
+const domandeQuantoMiConosci = [
+  { domanda: '[DOMANDA 1 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione A' },
+  { domanda: '[DOMANDA 2 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione B' },
+  { domanda: '[DOMANDA 3 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione C' },
+  { domanda: '[DOMANDA 4 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione A' },
+  { domanda: '[DOMANDA 5 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione D' },
+  { domanda: '[DOMANDA 6 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione B' },
+  { domanda: '[DOMANDA 7 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione C' },
+  { domanda: '[DOMANDA 8 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione A' },
+  { domanda: '[DOMANDA 9 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione D' },
+  { domanda: '[DOMANDA 10 DA PERSONALIZZARE]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C', 'Opzione D'], corretta: 'Opzione B' }
+]
+
+let indiceQMC = 0
+let punteggioQMC = 0
+
+function disegnaDomandaQMC() {
+  const domandaCorrente = domandeQuantoMiConosci[indiceQMC]
+
+  const opzioniHTML = domandaCorrente.opzioni.map(function (opzione) {
+    return `<div class="opzione-qmc" data-opzione="${opzione}">${opzione}</div>`
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="qmc-container">
+      <p class="progresso-qmc">Domanda ${indiceQMC + 1} di ${domandeQuantoMiConosci.length}</p>
+      <h2 class="domanda-qmc">${domandaCorrente.domanda}</h2>
+      <div class="opzioni-grid-qmc">${opzioniHTML}</div>
+    </div>
+  `
+}
+
+function mostraRisultatoQMC() {
+  document.querySelector('#app').innerHTML = `
+    <div class="risultato-qmc">
+      <h1>Hai risposto correttamente a ${punteggioQMC} domande su ${domandeQuantoMiConosci.length}!</h1>
+      <button class="rigioca-qmc">Rigioca</button>
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
+function mostraQuantoMiConosci() {
+  indiceQMC = 0
+  punteggioQMC = 0
+  disegnaDomandaQMC()
+}
+
+function gestisciClickOpzioneQMC(elementoOpzione) {
+  const domandaCorrente = domandeQuantoMiConosci[indiceQMC]
+  const opzioneScelta = elementoOpzione.dataset.opzione
+
+  // Disabilitiamo i click sulle altre opzioni finché non si passa alla prossima domanda
+  document.querySelectorAll('.opzione-qmc').forEach(function (el) {
+    el.classList.add('disabilitata')
+  })
+
+  if (opzioneScelta === domandaCorrente.corretta) {
+    elementoOpzione.classList.add('corretta')
+    punteggioQMC = punteggioQMC + 1
+  } else {
+    elementoOpzione.classList.add('sbagliata')
+  }
+
+  setTimeout(function () {
+    indiceQMC = indiceQMC + 1
+
+    if (indiceQMC >= domandeQuantoMiConosci.length) {
+      mostraRisultatoQMC()
+    } else {
+      disegnaDomandaQMC()
+    }
+  }, 700)
+}
+
+function mostraContatti() {
+  const contattiHTML = contatti.map(function (contatto) {
+    return `
+      <div class="riga-contatto">
+        <span class="etichetta-contatto">${contatto.etichetta}</span>
+        <span class="valore-contatto">${contatto.valore}</span>
+      </div>
+    `
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="pagina-contatti">
+      <h1>Contatti</h1>
+      <div class="lista-contatti">${contattiHTML}</div>
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
 function mostraHub() {
   document.querySelector('#app').innerHTML = `
     <header class="hub-header">
@@ -14,19 +235,465 @@ function mostraHub() {
       <div class="enigma-card" data-enigma="5"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 5</div><button class="bottone">Play</button></div>
       <div class="enigma-card" data-enigma="6"><img src="https://picsum.photos/200" alt="Logo" class="logoEnigma" /><div class="nomeEnigma">Enigma 6</div><button class="bottone">Play</button></div>
     </main>
+
+    <section class="codice-finale-container">
+      <h2>Conosci il codice segreto?</h2>
+      <p>Risolvi tutti gli enigmi per scoprire le 6 cifre, poi inseriscile qui.</p>
+      <input type="text" id="inputCodiceFinale" maxlength="6" class="input-codice-finale" placeholder="______" />
+      <button class="controlla-codice-finale">Verifica</button>
+      <p id="erroreCodiceFinale" class="errore-codice-finale"></p>
+      ${codiceSbloccato ? '<button class="vai-pagina-finale">Rivedi la pagina finale</button>' : ''}
+    </section>
   `
 }
 
-// ---------------------------------------------------------------------------
+// =============================================================================
+// CODICE SEGRETO: ogni enigma, una volta risolto, rivela UNA cifra (l'enigma
+// N rivela la cifra in posizione N). Quando lei ha tutte e 6 le cifre, le
+// inserisce nel campo nella home per sbloccare il messaggio finale.
+//
+// *** DA PERSONALIZZARE ***: sostituisci ogni 'X' con la cifra vera che vuoi
+// rivelare per quell'enigma (la seconda è già confermata: 8).
+// =============================================================================
+
+const cifreCodice = [
+  'X', // cifra rivelata dall'Enigma 1
+  '8', // cifra rivelata dall'Enigma 2 (confermata)
+  'X', // cifra rivelata dall'Enigma 3
+  'X', // cifra rivelata dall'Enigma 4
+  'X', // cifra rivelata dall'Enigma 5
+  'X'  // cifra rivelata dall'Enigma 6
+]
+
+// Resta true per tutta la sessione una volta inserito il codice giusto,
+// così dalla home si può tornare a rivedere la pagina finale.
+let codiceSbloccato = false
+
+function controllaCodiceFinale() {
+  const input = document.querySelector('#inputCodiceFinale')
+  const valoreInserito = input.value.trim()
+  const codiceCorretto = cifreCodice.join('')
+
+  if (valoreInserito === codiceCorretto) {
+    codiceSbloccato = true
+    sbloccaLettoreCanzone()
+    mostraPaginaFinale()
+  } else {
+    document.querySelector('#erroreCodiceFinale').textContent = 'Codice errato, riprova!'
+  }
+}
+
+// =============================================================================
+// PAGINA FINALE: non è un overlay come le schermate di vittoria degli enigmi,
+// ma una pagina vera e propria che sostituisce tutto il contenuto di #app —
+// il "traguardo" di tutto il percorso.
+//
+// *** DA PERSONALIZZARE ***: titoloFinale, fotoFinale (una o più immagini),
+// testoFinale (la lettera/dichiarazione d'amore).
+// =============================================================================
+
+const titoloFinale = '[TITOLO DA PERSONALIZZARE]'
+const fotoFinale = 'https://picsum.photos/600?random=99' // sostituisci con una vostra foto
+const testoFinale = `
+  [TESTO DA PERSONALIZZARE — qui scrivi tutto quello che vuoi dirle: la vostra
+  storia, cosa significa lei per te, una dichiarazione, un ricordo speciale.
+  Puoi scrivere più paragrafi, basta separarli andando a capo qui dentro.]
+`
+
+function mostraPaginaFinale() {
+  document.querySelector('#app').innerHTML = `
+    <div class="pagina-finale">
+      <h1 class="titolo-finale">${titoloFinale}</h1>
+      <div class="foto-finale-container">
+        <img src="${fotoFinale}" class="foto-finale" alt="Noi due" />
+      </div>
+      <p class="testo-finale">${testoFinale}</p>
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
+// =============================================================================
+// CANZONE DI SOTTOFONDO: tag <audio controls> vero, con un file mp3 reale.
+// Vive dentro index.html, FUORI da #app — esattamente come la navbar — così
+// non viene mai distrutto quando cambiamo pagina e continua a suonare mentre
+// si naviga nel sito. I controlli nativi (play/pausa/avanzamento/volume)
+// restano sempre utilizzabili.
+//
+// Il player resta nascosto (display:none) finché il codice finale non viene
+// inserito correttamente. A quel punto sbloccaLettoreCanzone() gli assegna
+// il file audio, lo rende visibile e sostituisce i link della navbar (ancora
+// inutilizzati) con un'unica voce "Canzone", che apre/chiude il player.
+//
+// *** DA PERSONALIZZARE ***: urlCanzone. Metti il file mp3 dentro la cartella
+// public/ del progetto (es. public/canzone.mp3) e scrivi qui il percorso
+// con lo slash iniziale: '/canzone.mp3'. Serve anche aggiungere il tag
+// <audio> in index.html — vedi le istruzioni a parte.
+// =============================================================================
+
+const urlCanzone = '[PERCORSO DEL FILE MP3 DA PERSONALIZZARE — es. /canzone.mp3]'
+
+function sbloccaLettoreCanzone() {
+  // Una volta inserito il codice giusto, la navbar si "semplifica": restano
+  // visibili SOLO Viaggi e Canzone (Home/Spiegazione/Chi siamo/Contatti
+  // scompaiono dal menu — restano comunque raggiungibili dai bottoni "Torna
+  // alla home" dentro le pagine).
+  const listaLink = document.querySelector('#listaLink')
+  if (listaLink) {
+    listaLink.innerHTML = `
+      <li><a href="page6">Viaggi</a></li>
+      <li><a href="page5">Canzone</a></li>
+    `
+  }
+
+  const audio = document.querySelector('#audioCanzone')
+  if (audio) {
+    audio.src = urlCanzone
+    audio.loop = true
+    audio.play()
+  }
+
+  const player = document.querySelector('#player-canzone')
+  if (player) {
+    player.style.display = 'flex'
+  }
+}
+
+function toggleVisibilitaLettoreCanzone() {
+  const player = document.querySelector('#player-canzone')
+  if (!player) return
+  player.style.display = (player.style.display === 'none') ? 'flex' : 'none'
+}
+
+// =============================================================================
+// PAGINA "I NOSTRI VIAGGI": una linea del tempo dal 2019 a oggi, con un
+// puntino per ogni viaggio. Al passaggio del mouse (gestito in puro CSS,
+// nessun JS necessario per il tooltip) appare il nome del viaggio. Al click
+// si apre una schermata a pieno sfondo con le 4 foto di quel viaggio, un
+// gradiente sopra (colore in base al viaggio) per rendere leggibile il testo,
+// e una cornice colorata in tema.
+//
+// *** DA PERSONALIZZARE ***: modifica/aggiungi viaggi nell'array "viaggi" —
+// anno, nome, le 4 foto vere, e il colore tema. "Parigi" qui sotto è
+// l'esempio che hai chiesto, con foto placeholder casuali da sostituire.
+// =============================================================================
+
+const annoInizioTimeline = 2019
+const annoFineTimeline = new Date().getFullYear()
+
+const viaggi = [
+  {
+    anno: 2019,
+    nome: 'Parigi',
+    colore: '#1a2a52', // blu notte — tema "Parigi"
+    foto: [
+      'https://picsum.photos/400?random=101',
+      'https://picsum.photos/400?random=102',
+      'https://picsum.photos/400?random=103',
+      'https://picsum.photos/400?random=104'
+    ]
+  },
+  {
+    anno: 2021,
+    nome: '[VIAGGIO DA PERSONALIZZARE]',
+    colore: '#7a4b2f',
+    foto: [
+      'https://picsum.photos/400?random=105',
+      'https://picsum.photos/400?random=106',
+      'https://picsum.photos/400?random=107',
+      'https://picsum.photos/400?random=108'
+    ]
+  },
+  {
+    anno: 2023,
+    nome: '[VIAGGIO DA PERSONALIZZARE]',
+    colore: '#2f6b4f',
+    foto: [
+      'https://picsum.photos/400?random=109',
+      'https://picsum.photos/400?random=110',
+      'https://picsum.photos/400?random=111',
+      'https://picsum.photos/400?random=112'
+    ]
+  }
+]
+
+function calcolaPosizionePercento(anno) {
+  return ((anno - annoInizioTimeline) / (annoFineTimeline - annoInizioTimeline)) * 100
+}
+
+function mostraViaggi() {
+  const puntiHTML = viaggi.map(function (viaggio, indice) {
+    const posizione = calcolaPosizionePercento(viaggio.anno)
+    return `
+      <div class="punto-viaggio" style="left:${posizione}%" data-indice="${indice}">
+        <span class="tooltip-viaggio">${viaggio.nome}</span>
+      </div>
+    `
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="pagina-viaggi">
+      <h1>I nostri viaggi</h1>
+      <div class="timeline-viaggi-container">
+        <div class="linea-timeline"></div>
+        ${puntiHTML}
+        <span class="etichetta-anno etichetta-anno-inizio">${annoInizioTimeline}</span>
+        <span class="etichetta-anno etichetta-anno-fine">${annoFineTimeline}</span>
+      </div>
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
+function mostraDettaglioViaggio(indice) {
+  const viaggio = viaggi[indice]
+
+  const fotoHTML = viaggio.foto.map(function (url) {
+    return `<div class="foto-viaggio-sfondo" style="background-image:url('${url}')"></div>`
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="dettaglio-viaggio" style="border-color:${viaggio.colore}">
+      <div class="collage-viaggio">${fotoHTML}</div>
+      <div class="overlay-gradiente-viaggio" style="background:linear-gradient(to bottom, transparent, ${viaggio.colore})"></div>
+      <div class="contenuto-dettaglio-viaggio">
+        <h1>${viaggio.nome}</h1>
+        <p>${viaggio.anno}</p>
+        <button class="vai-viaggi">Torna alla timeline</button>
+      </div>
+    </div>
+  `
+}
+
+// =============================================================================
+// Funzione helper riusata da tutti gli enigmi: mescola un array "sul posto"
+// (algoritmo di Fisher-Yates). Usata per carte, eventi, lettere, ecc.
+// =============================================================================
+
+function mescola(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+  return array
+}
+
+// =============================================================================
+// ENIGMA 1 (puzzle a incastro): una vostra foto divisa in 9 pezzi (griglia
+// 3x3), mescolati in un "vassoio"; si trascinano — con mouse O con un dito su
+// smartphone — nella griglia vuota, nel posto giusto.
+//
+// Il trascinamento è gestito "a mano" con i Pointer Event (pointerdown /
+// pointermove / pointerup) invece del drag-and-drop nativo del browser,
+// perché quello nativo (l'attributo draggable) funziona male o per niente
+// sui touchscreen — i Pointer Event invece si comportano allo stesso modo
+// con mouse, dito e penna, quindi funziona ovunque.
+//
+// Ogni pezzo NON è un ritaglio separato dell'immagine: è un div con la
+// stessa immagine intera come sfondo, spostata con background-position —
+// lo stesso trucco già accennato nel commento dell'Enigma 5.
+//
+// *** DA PERSONALIZZARE ***: immaginePuzzle1 con una vostra foto vera.
+// =============================================================================
+
+const immaginePuzzle1 = 'https://picsum.photos/450?random=400'
+const dimensionePuzzle1 = 3 // griglia 3x3 = 9 pezzi
+
+let enigma1GiaCreato = false
+let enigma1Completato = false
+let slotPuzzle1 = [] // 9 posizioni: null (vuota) oppure l'id (0-8) del pezzo che occupa quella casella
+let vassoioPuzzle1 = [] // id dei pezzi ancora nel vassoio, mescolati
+
+function creaPuzzle1() {
+  const totalePezzi = dimensionePuzzle1 * dimensionePuzzle1
+  slotPuzzle1 = new Array(totalePezzi).fill(null)
+  vassoioPuzzle1 = mescola(
+    Array.from({ length: totalePezzi }, function (_, i) { return i })
+  )
+}
+
+// Calcola lo sfondo del pezzo "idPezzo": l'immagine intera, ingrandita e
+// spostata in modo che si veda solo il riquadro corrispondente a quel pezzo.
+function stileSfondoPezzoPuzzle1(idPezzo) {
+  const riga = Math.floor(idPezzo / dimensionePuzzle1)
+  const colonna = idPezzo % dimensionePuzzle1
+  const passo = 100 / (dimensionePuzzle1 - 1)
+  return `background-image:url('${immaginePuzzle1}'); background-size:${dimensionePuzzle1 * 100}% ${dimensionePuzzle1 * 100}%; background-position:${colonna * passo}% ${riga * passo}%;`
+}
+
+function disegnaPuzzle1() {
+  const slotHTML = slotPuzzle1.map(function (idPezzo, indice) {
+    if (idPezzo === null) {
+      return `<div class="slot-puzzle1" data-indice="${indice}"></div>`
+    }
+    return `
+      <div class="slot-puzzle1" data-indice="${indice}">
+        <div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="slot" data-da-indice="${indice}" style="${stileSfondoPezzoPuzzle1(idPezzo)}"></div>
+      </div>
+    `
+  }).join('')
+
+  const vassoioHTML = vassoioPuzzle1.map(function (idPezzo) {
+    return `<div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="vassoio" style="${stileSfondoPezzoPuzzle1(idPezzo)}"></div>`
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="puzzle1-container">
+      <p class="istruzioni-puzzle1">Trascina i pezzi nella griglia per ricomporre la foto</p>
+      <div class="puzzle1-area">
+        <div class="griglia-puzzle1" style="grid-template-columns:repeat(${dimensionePuzzle1}, 1fr)">${slotHTML}</div>
+        <div class="vassoio-puzzle1">${vassoioHTML}</div>
+      </div>
+    </div>
+  `
+}
+
+function mostraMessaggioVittoriaEnigma1() {
+  document.querySelector('#app').innerHTML += `
+    <div class="overlay-vittoria">
+      <div class="messaggio-vittoria">
+        Completato!! La prima cifra del codice è ${cifreCodice[0]}
+        <br>
+        <button class="vai-home">Vai alla home</button>
+      </div>
+    </div>
+  `
+}
+
+function mostraEnigma1() {
+  if (!enigma1GiaCreato) {
+    creaPuzzle1()
+    enigma1GiaCreato = true
+  }
+  disegnaPuzzle1()
+
+  if (enigma1Completato) {
+    mostraMessaggioVittoriaEnigma1()
+  }
+}
+
+function controllaVittoriaPuzzle1() {
+  const risolto = slotPuzzle1.every(function (idPezzo, indice) {
+    return idPezzo === indice
+  })
+
+  if (risolto) {
+    enigma1Completato = true
+    setTimeout(function () {
+      mostraMessaggioVittoriaEnigma1()
+    }, 300)
+  }
+}
+
+// --- Trascinamento dei pezzi, con i Pointer Event (mouse, dito o penna) ---
+// Questi listener vivono fuori da ogni funzione, quindi vengono registrati
+// UNA SOLA volta all'avvio: controllano da soli, guardando il DOM, se siamo
+// davvero sulla pagina dell'Enigma 1 prima di fare qualcosa.
+
+let pezzoTrascinatoPuzzle1 = null // { idPezzo, provenienza, provenienzaIndice, clone, larghezza, altezza }
+
+document.addEventListener('pointerdown', function (event) {
+  const elementoPezzo = event.target.closest('.pezzo-puzzle1')
+  if (!elementoPezzo) return
+
+  const larghezza = elementoPezzo.offsetWidth
+  const altezza = elementoPezzo.offsetHeight
+
+  // Creiamo un "clone" visivo del pezzo che seguirà il dito/il mouse durante
+  // il trascinamento, lasciando il pezzo originale al suo posto (verrà
+  // comunque ridisegnato subito dopo, quando il trascinamento finisce).
+  const clone = elementoPezzo.cloneNode(true)
+  clone.classList.add('pezzo-puzzle1-trascinato')
+  clone.style.width = larghezza + 'px'
+  clone.style.height = altezza + 'px'
+  clone.style.left = (event.clientX - larghezza / 2) + 'px'
+  clone.style.top = (event.clientY - altezza / 2) + 'px'
+  document.body.appendChild(clone)
+
+  elementoPezzo.style.opacity = '0.25'
+
+  pezzoTrascinatoPuzzle1 = {
+    idPezzo: Number(elementoPezzo.dataset.pezzo),
+    provenienza: elementoPezzo.dataset.da, // 'vassoio' oppure 'slot'
+    provenienzaIndice: elementoPezzo.dataset.daIndice ? Number(elementoPezzo.dataset.daIndice) : null,
+    clone: clone,
+    larghezza: larghezza,
+    altezza: altezza
+  }
+})
+
+document.addEventListener('pointermove', function (event) {
+  if (!pezzoTrascinatoPuzzle1) return
+  const trascinamento = pezzoTrascinatoPuzzle1
+  trascinamento.clone.style.left = (event.clientX - trascinamento.larghezza / 2) + 'px'
+  trascinamento.clone.style.top = (event.clientY - trascinamento.altezza / 2) + 'px'
+})
+
+document.addEventListener('pointerup', function (event) {
+  if (!pezzoTrascinatoPuzzle1) return
+
+  const trascinamento = pezzoTrascinatoPuzzle1
+  trascinamento.clone.remove()
+  pezzoTrascinatoPuzzle1 = null
+
+  // Se nel frattempo si è usciti dalla pagina del puzzle, non facciamo nulla.
+  if (!document.querySelector('.puzzle1-container')) return
+
+  const elementoSotto = document.elementFromPoint(event.clientX, event.clientY)
+  const slotDestinazione = elementoSotto ? elementoSotto.closest('.slot-puzzle1') : null
+  const vassoioDestinazione = elementoSotto ? elementoSotto.closest('.vassoio-puzzle1') : null
+
+  if (slotDestinazione) {
+    spostaPezzoPuzzle1(trascinamento, { tipo: 'slot', indice: Number(slotDestinazione.dataset.indice) })
+  } else if (vassoioDestinazione) {
+    spostaPezzoPuzzle1(trascinamento, { tipo: 'vassoio' })
+  } else {
+    // Rilasciato fuori dall'area utile: ridisegniamo comunque, così il
+    // pezzo originale (che avevamo reso semi-trasparente) torna visibile.
+    disegnaPuzzle1()
+  }
+})
+
+function spostaPezzoPuzzle1(trascinamento, destinazione) {
+  // Togliamo il pezzo da dove si trovava prima del trascinamento.
+  if (trascinamento.provenienza === 'vassoio') {
+    vassoioPuzzle1 = vassoioPuzzle1.filter(function (id) {
+      return id !== trascinamento.idPezzo
+    })
+  } else {
+    slotPuzzle1[trascinamento.provenienzaIndice] = null
+  }
+
+  if (destinazione.tipo === 'slot') {
+    // Se nello slot di destinazione c'era già un altro pezzo, torna nel vassoio.
+    const pezzoEsistente = slotPuzzle1[destinazione.indice]
+    if (pezzoEsistente !== null) {
+      vassoioPuzzle1.push(pezzoEsistente)
+    }
+    slotPuzzle1[destinazione.indice] = trascinamento.idPezzo
+  } else {
+    vassoioPuzzle1.push(trascinamento.idPezzo)
+  }
+
+  disegnaPuzzle1()
+  controllaVittoriaPuzzle1()
+}
+
+// =============================================================================
 // ENIGMA 2 (memory): stato definito FUORI dalla funzione, così sopravvive
 // ogni volta che si entra e si esce dall'enigma, invece di essere ricreato.
-// ---------------------------------------------------------------------------
+//
+// *** DA PERSONALIZZARE ***: i "valore" delle carte (sostituire 'foto1' ecc.
+// con gli URL delle foto vere), e il testo del messaggio finale.
+// =============================================================================
 
 let mazzo = []
 let carteGirate = []
 let bloccatoMemory = false
-let mazzoGiaCreato = false // per creare il mazzo (e mescolarlo) una sola volta
-let memoryCompletato = false // resta true per sempre, una volta vinto
+let mazzoGiaCreato = false
+let memoryCompletato = false
 
 function creaMazzo() {
   mazzo = [
@@ -54,16 +721,6 @@ function creaMazzo() {
   mazzo = mescola(mazzo)
 }
 
-function mescola(mazzo) {
-  for (let i = mazzo.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const temp = mazzo[i]
-    mazzo[i] = mazzo[j]
-    mazzo[j] = temp
-  }
-  return mazzo
-}
-
 function disegnaMemory() {
   const stampa = mazzo.map(function (carta) {
     const classeGirata = (carta.scoperta || carta.abbinata) ? 'girata' : ''
@@ -81,11 +738,11 @@ function disegnaMemory() {
   document.querySelector('#app').innerHTML = `<div class="memory-grid">${html}</div>`
 }
 
-function mostraMessaggioVittoria() {
+function mostraMessaggioVittoriaEnigma2() {
   document.querySelector('#app').innerHTML += `
     <div class="overlay-vittoria">
       <div class="messaggio-vittoria">
-        Completato!! La seconda cifra del codice è 8
+        Completato!! La seconda cifra del codice è ${cifreCodice[1]}
         <br>
         <button class="vai-home">Vai alla home</button>
       </div>
@@ -100,17 +757,63 @@ function mostraEnigma2() {
   }
   disegnaMemory()
 
-  // se il memory era già stato completato in precedenza, mostra subito il messaggio
   if (memoryCompletato) {
-    mostraMessaggioVittoria()
+    mostraMessaggioVittoriaEnigma2()
   }
 }
 
-// ---------------------------------------------------------------------------
-// ENIGMA 3 (chi è questo giocatore?): stato definito FUORI dalla funzione,
-// come per il memory, così ricorda a che domanda eri arrivato anche se esci
-// e rientri, e ricorda se lo hai già completato.
-// ---------------------------------------------------------------------------
+function gestisciClickCarta(elementoCarta) {
+  if (bloccatoMemory) return
+
+  const id = Number(elementoCarta.dataset.id)
+  const cartaCliccata = mazzo.find(function (c) {
+    return c.id === id
+  })
+
+  if (cartaCliccata.scoperta || cartaCliccata.abbinata) return
+
+  cartaCliccata.scoperta = true
+  carteGirate.push(cartaCliccata)
+  disegnaMemory()
+
+  if (carteGirate.length === 2) {
+    const [prima, seconda] = carteGirate
+
+    if (prima.valore === seconda.valore) {
+      prima.abbinata = true
+      seconda.abbinata = true
+      carteGirate = []
+
+      const tutteTrovate = mazzo.every(function (carta) {
+        return carta.abbinata
+      })
+
+      if (tutteTrovate) {
+        memoryCompletato = true
+        setTimeout(function () {
+          mostraMessaggioVittoriaEnigma2()
+        }, 500)
+      }
+    } else {
+      bloccatoMemory = true
+      setTimeout(function () {
+        prima.scoperta = false
+        seconda.scoperta = false
+        carteGirate = []
+        bloccatoMemory = false
+        disegnaMemory()
+      }, 800)
+    }
+  }
+}
+
+// =============================================================================
+// ENIGMA 3 (chi è questo giocatore?): quiz a scelta multipla con progressione
+// lineare. Stato persistente, come il memory.
+//
+// *** DA PERSONALIZZARE ***: le immagini, i nomi delle opzioni, quale sia
+// quella corretta per ciascuna domanda, e il testo del messaggio finale.
+// =============================================================================
 
 const domandeEnigma3 = [
   { immagine: 'https://picsum.photos/300?random=1', opzioni: ['Nome1', 'Nome2', 'Nome3', 'Nome4'], corretta: 'Nome1' },
@@ -147,7 +850,7 @@ function mostraMessaggioVittoriaEnigma3() {
   document.querySelector('#app').innerHTML += `
     <div class="overlay-vittoria">
       <div class="messaggio-vittoria">
-        Completato!! [TESTO DEL CODICE DA PERSONALIZZARE]
+        Completato!! La terza cifra del codice è ${cifreCodice[2]}
         <br>
         <button class="vai-home">Vai alla home</button>
       </div>
@@ -158,7 +861,6 @@ function mostraMessaggioVittoriaEnigma3() {
 function mostraEnigma3() {
   disegnaDomanda3()
 
-  // se il quiz era già stato completato in precedenza, mostra subito il messaggio
   if (enigma3Completato) {
     mostraMessaggioVittoriaEnigma3()
   }
@@ -169,14 +871,12 @@ function gestisciClickOpzione(elementoOpzione) {
   const nomeScelto = elementoOpzione.dataset.nome
 
   if (nomeScelto === domandaCorrente.corretta) {
-    // risposta corretta: colora di verde, aspetta un attimo, poi avanza
     elementoOpzione.classList.add('corretta')
 
     setTimeout(function () {
       indiceAttuale3 = indiceAttuale3 + 1
 
       if (indiceAttuale3 >= domandeEnigma3.length) {
-        // era l'ultima domanda: quiz completato
         enigma3Completato = true
         mostraMessaggioVittoriaEnigma3()
       } else {
@@ -184,151 +884,335 @@ function gestisciClickOpzione(elementoOpzione) {
       }
     }, 600)
   } else {
-    // risposta sbagliata: si riparte dalla prima domanda
     indiceAttuale3 = 0
     disegnaDomanda3()
   }
 }
 
-function gestisciClickCarta(elementoCarta) {
-  if (bloccatoMemory) return // ignora i click mentre aspettiamo di ricoprire una coppia sbagliata
+// =============================================================================
+// ENIGMA 4 (timeline): 9 eventi mostrati in ordine casuale, da cliccare nel
+// giusto ordine cronologico. Un click sbagliato riporta tutto all'inizio.
+//
+// *** DA PERSONALIZZARE ***: il "testo" di ciascun evento (l'ORDINE in cui
+// li scrivi qui sotto è l'ordine cronologico corretto: il primo elemento
+// dell'array è il primo evento accaduto), e il testo del messaggio finale.
+// =============================================================================
 
-  const id = Number(elementoCarta.dataset.id)
-  const cartaCliccata = mazzo.find(function (c) {
-    return c.id === id
+const eventiTimeline = [
+  { id: 0, testo: '[Evento 1 — il più vecchio]' },
+  { id: 1, testo: '[Evento 2]' },
+  { id: 2, testo: '[Evento 3]' },
+  { id: 3, testo: '[Evento 4]' },
+  { id: 4, testo: '[Evento 5]' },
+  { id: 5, testo: '[Evento 6]' },
+  { id: 6, testo: '[Evento 7]' },
+  { id: 7, testo: '[Evento 8]' },
+  { id: 8, testo: '[Evento 9 — il più recente]' }
+]
+
+let timelineMostrata = []
+let timelineGiaCreata = false
+let prossimoIndiceTimeline = 0
+let timelineCompletata = false
+
+function creaTimeline() {
+  const copiaConStato = eventiTimeline.map(function (evento) {
+    return { id: evento.id, testo: evento.testo, trovato: false }
+  })
+  timelineMostrata = mescola(copiaConStato)
+}
+
+function disegnaTimeline() {
+  const html = timelineMostrata.map(function (evento) {
+    const classeTrovato = evento.trovato ? 'trovato' : ''
+    return `<div class="evento-timeline ${classeTrovato}" data-id="${evento.id}">${evento.testo}</div>`
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `<div class="timeline-container">${html}</div>`
+}
+
+function mostraMessaggioVittoriaEnigma4() {
+  document.querySelector('#app').innerHTML += `
+    <div class="overlay-vittoria">
+      <div class="messaggio-vittoria">
+        Completato!! La quarta cifra del codice è ${cifreCodice[3]}
+        <br>
+        <button class="vai-home">Vai alla home</button>
+      </div>
+    </div>
+  `
+}
+
+function mostraEnigma4() {
+  if (!timelineGiaCreata) {
+    creaTimeline()
+    timelineGiaCreata = true
+  }
+  disegnaTimeline()
+
+  if (timelineCompletata) {
+    mostraMessaggioVittoriaEnigma4()
+  }
+}
+
+function gestisciClickEvento(elementoEvento) {
+  const id = Number(elementoEvento.dataset.id)
+  const evento = timelineMostrata.find(function (e) {
+    return e.id === id
   })
 
-  if (cartaCliccata.scoperta || cartaCliccata.abbinata) return
+  if (evento.trovato) return // già trovato in questo giro, ignora
 
-  cartaCliccata.scoperta = true
-  carteGirate.push(cartaCliccata)
-  disegnaMemory()
+  if (id === prossimoIndiceTimeline) {
+    evento.trovato = true
+    prossimoIndiceTimeline = prossimoIndiceTimeline + 1
+    disegnaTimeline()
 
-  if (carteGirate.length === 2) {
-    const [prima, seconda] = carteGirate
+    if (prossimoIndiceTimeline === eventiTimeline.length) {
+      timelineCompletata = true
+      setTimeout(function () {
+        mostraMessaggioVittoriaEnigma4()
+      }, 400)
+    }
+  } else {
+    // ordine sbagliato: si riparte da capo
+    prossimoIndiceTimeline = 0
+    timelineMostrata.forEach(function (e) {
+      e.trovato = false
+    })
+    disegnaTimeline()
+  }
+}
 
-    if (prima.valore === seconda.valore) {
-      prima.abbinata = true
-      seconda.abbinata = true
-      carteGirate = []
+// =============================================================================
+// ENIGMA 5 (puzzle scorrevole 3x3): 8 tessere numerate + uno spazio vuoto.
+// Click su una tessera adiacente al vuoto per spostarla.
+//
+// *** DA PERSONALIZZARE ***: per usare una foto vera al posto dei numeri,
+// vedi il commento dentro disegnaPuzzle() più sotto. Più il messaggio finale.
+// =============================================================================
 
-      const tutteTrovate = mazzo.every(function (carta) {
-        return carta.abbinata
-      })
+let puzzleStato = []
+let puzzleGiaCreato = false
+let puzzleCompletato = false
 
-      if (tutteTrovate) {
-        memoryCompletato = true
+function posizioniAdiacenti(indice) {
+  const riga = Math.floor(indice / 3)
+  const colonna = indice % 3
+  const adiacenti = []
+  if (riga > 0) adiacenti.push(indice - 3)
+  if (riga < 2) adiacenti.push(indice + 3)
+  if (colonna > 0) adiacenti.push(indice - 1)
+  if (colonna < 2) adiacenti.push(indice + 1)
+  return adiacenti
+}
+
+function creaPuzzle() {
+  puzzleStato = [1, 2, 3, 4, 5, 6, 7, 8, null] // stato risolto: null è lo spazio vuoto
+
+  // Mescoliamo facendo 200 mosse valide casuali a partire dallo stato risolto:
+  // così il puzzle è SEMPRE risolvibile (mescolare a caso le posizioni non lo garantirebbe).
+  for (let i = 0; i < 200; i++) {
+    const indiceVuoto = puzzleStato.indexOf(null)
+    const adiacenti = posizioniAdiacenti(indiceVuoto)
+    const scelta = adiacenti[Math.floor(Math.random() * adiacenti.length)]
+    puzzleStato[indiceVuoto] = puzzleStato[scelta]
+    puzzleStato[scelta] = null
+  }
+}
+
+function disegnaPuzzle() {
+  const html = puzzleStato.map(function (valore, indice) {
+    if (valore === null) {
+      return `<div class="tessera vuota" data-indice="${indice}"></div>`
+    }
+    // *** PER USARE UNA FOTO VERA ***: invece di "${valore}" come testo,
+    // genera uno sfondo con background-position calcolato dal numero,
+    // es. style="background-image:url('...'); background-position:...".
+    // Per ora resta con i numeri placeholder.
+    return `<div class="tessera" data-indice="${indice}">${valore}</div>`
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `<div class="puzzle-grid">${html}</div>`
+}
+
+function mostraMessaggioVittoriaEnigma5() {
+  document.querySelector('#app').innerHTML += `
+    <div class="overlay-vittoria">
+      <div class="messaggio-vittoria">
+        Completato!! La quinta cifra del codice è ${cifreCodice[4]}
+        <br>
+        <button class="vai-home">Vai alla home</button>
+      </div>
+    </div>
+  `
+}
+
+function mostraEnigma5() {
+  if (!puzzleGiaCreato) {
+    creaPuzzle()
+    puzzleGiaCreato = true
+  }
+  disegnaPuzzle()
+
+  if (puzzleCompletato) {
+    mostraMessaggioVittoriaEnigma5()
+  }
+}
+
+function gestisciClickTessera(elementoTessera) {
+  const indice = Number(elementoTessera.dataset.indice)
+  const indiceVuoto = puzzleStato.indexOf(null)
+
+  const adiacenti = posizioniAdiacenti(indiceVuoto)
+  if (!adiacenti.includes(indice)) return // non è adiacente al vuoto: click ignorato
+
+  puzzleStato[indiceVuoto] = puzzleStato[indice]
+  puzzleStato[indice] = null
+  disegnaPuzzle()
+
+  const risolto = puzzleStato.every(function (valore, i) {
+    if (i === 8) return valore === null
+    return valore === i + 1
+  })
+
+  if (risolto) {
+    puzzleCompletato = true
+    setTimeout(function () {
+      mostraMessaggioVittoriaEnigma5()
+    }, 400)
+  }
+}
+
+// =============================================================================
+// ENIGMA 6 (parole nascoste): una serie di parole con le lettere mescolate,
+// da ricostruire cliccandole nell'ordine giusto.
+//
+// NOTA IMPORTANTE: un vero cruciverba (griglia con parole incrociate e
+// indizi numerati) è molto più complesso da costruire in vanilla JS — per
+// restare nei tempi ho implementato questa versione semplificata (lettere
+// mescolate, non griglia incrociata). Se vuoi il cruciverba vero lo
+// costruiamo come step successivo, ha senso solo se resta tempo a fine lista.
+//
+// *** DA PERSONALIZZARE ***: le parole in "paroleNascoste" (tutte MAIUSCOLE,
+// senza spazi), e il testo del messaggio finale.
+// =============================================================================
+
+const paroleNascoste = [
+  { soluzione: 'PAROLA1' },
+  { soluzione: 'PAROLA2' },
+  { soluzione: 'PAROLA3' }
+]
+
+let indiceParolaCorrente = 0
+let lettereMescolate = []
+let tentativoAttuale = []
+let parolaInizializzata = false
+let paroleCompletate = false
+
+function mescolaLettereParola(parola) {
+  const lettere = parola.split('').map(function (lettera, indice) {
+    return { id: indice, lettera: lettera }
+  })
+  return mescola(lettere)
+}
+
+function iniziaParolaCorrente() {
+  const parola = paroleNascoste[indiceParolaCorrente].soluzione
+  lettereMescolate = mescolaLettereParola(parola)
+  tentativoAttuale = []
+}
+
+function disegnaParolaNascosta() {
+  const lettereHTML = lettereMescolate.map(function (l) {
+    const classeUsata = tentativoAttuale.includes(l.id) ? 'usata' : ''
+    return `<div class="lettera-tile ${classeUsata}" data-id="${l.id}">${l.lettera}</div>`
+  }).join('')
+
+  const tentativoTesto = tentativoAttuale.map(function (id) {
+    return lettereMescolate.find(function (l) {
+      return l.id === id
+    }).lettera
+  }).join('')
+
+  document.querySelector('#app').innerHTML = `
+    <div class="parola-container">
+      <p class="progresso-parole">Parola ${indiceParolaCorrente + 1} di ${paroleNascoste.length}</p>
+      <div class="tentativo-attuale">${tentativoTesto}</div>
+      <div class="lettere-grid">${lettereHTML}</div>
+    </div>
+  `
+}
+
+function mostraMessaggioVittoriaEnigma6() {
+  document.querySelector('#app').innerHTML += `
+    <div class="overlay-vittoria">
+      <div class="messaggio-vittoria">
+        Completato!! La sesta cifra del codice è ${cifreCodice[5]}
+        <br>
+        <button class="vai-home">Vai alla home</button>
+      </div>
+    </div>
+  `
+}
+
+function mostraEnigma6() {
+  if (!parolaInizializzata) {
+    iniziaParolaCorrente()
+    parolaInizializzata = true
+  }
+  disegnaParolaNascosta()
+
+  if (paroleCompletate) {
+    mostraMessaggioVittoriaEnigma6()
+  }
+}
+
+function gestisciClickLettera(elementoLettera) {
+  const id = Number(elementoLettera.dataset.id)
+  if (tentativoAttuale.includes(id)) return // lettera già usata nel tentativo corrente
+
+  tentativoAttuale.push(id)
+  disegnaParolaNascosta()
+
+  const soluzione = paroleNascoste[indiceParolaCorrente].soluzione
+
+  if (tentativoAttuale.length === soluzione.length) {
+    const tentativoTesto = tentativoAttuale.map(function (idLettera) {
+      return lettereMescolate.find(function (l) {
+        return l.id === idLettera
+      }).lettera
+    }).join('')
+
+    if (tentativoTesto === soluzione) {
+      indiceParolaCorrente = indiceParolaCorrente + 1
+
+      if (indiceParolaCorrente >= paroleNascoste.length) {
+        paroleCompletate = true
         setTimeout(function () {
-          mostraMessaggioVittoria()
-        }, 500)
+          mostraMessaggioVittoriaEnigma6()
+        }, 400)
+      } else {
+        setTimeout(function () {
+          iniziaParolaCorrente()
+          disegnaParolaNascosta()
+        }, 400)
       }
     } else {
-      bloccatoMemory = true
+      // parola sbagliata: svuota il tentativo e ricomincia la stessa parola
       setTimeout(function () {
-        prima.scoperta = false
-        seconda.scoperta = false
-        carteGirate = []
-        bloccatoMemory = false
-        disegnaMemory()
-      }, 800)
+        tentativoAttuale = []
+        disegnaParolaNascosta()
+      }, 600)
     }
   }
 }
 
-// ---------------------------------------------------------------------------
-// ENIGMA 1 (platform game): può ripartire da zero ogni volta, nessuna
-// richiesta di persistenza per questo enigma.
-// ---------------------------------------------------------------------------
-
-function mostraEnigma1() {
-  document.querySelector('#app').innerHTML = `
-    <canvas id="gioco" width="2000" height="500"></canvas>
-  `
-  const tasti = {
-    destra: false,
-    sinistra: false,
-    sotto: false,
-    sopra: false
-  }
-
-  const piattaforma = {
-    x: 300,
-    y: 200,
-    larghezza: 100,
-    altezza: 20
-  }
-
-  document.addEventListener('keydown', (event) => {
-    if (event.code === 'KeyD') tasti.destra = true
-    if (event.code === 'KeyA') tasti.sinistra = true
-    if (event.code === 'KeyS') tasti.sotto = true
-    if (event.code === 'KeyW') tasti.sopra = true
-  })
-
-  document.addEventListener('keyup', (event) => {
-    if (event.code === 'KeyD') tasti.destra = false
-    if (event.code === 'KeyA') tasti.sinistra = false
-    if (event.code === 'KeyS') tasti.sotto = false
-    if (event.code === 'KeyW') tasti.sopra = false
-  })
-
-  const canvas = document.querySelector('#gioco')
-  const ctx = canvas.getContext('2d')
-
-  const terra = 250
-  const gravità = 0.5
-
-  let personaggioX = 50
-  let personaggioY = terra
-  let velocitàY = 0
-
-  document.addEventListener('keydown', (event) => {
-    if (event.code === 'Space' && velocitàY === 0) {
-      velocitàY = -13
-    }
-  })
-
-  function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-    velocitàY = velocitàY + gravità
-    personaggioY = personaggioY + velocitàY
-
-    if (personaggioY > terra) {
-      personaggioY = terra
-      velocitàY = 0
-    }
-
-    if (tasti.destra) personaggioX = personaggioX + 3
-    if (tasti.sinistra) personaggioX = personaggioX - 3
-
-    ctx.fillStyle = 'red'
-    ctx.fillRect(personaggioX, personaggioY, 40, 40)
-    ctx.fillStyle = 'blue'
-    ctx.fillRect(piattaforma.x, piattaforma.y, piattaforma.larghezza, piattaforma.altezza)
-
-    if (
-      velocitàY >= 0 &&
-      (personaggioY - velocitàY) + 40 <= piattaforma.y &&
-      personaggioY + 40 >= piattaforma.y &&
-      personaggioX + 40 >= piattaforma.x &&
-      personaggioX <= piattaforma.x + piattaforma.larghezza
-    ) {
-      personaggioY = piattaforma.y - 40
-      velocitàY = 0
-    }
-
-    requestAnimationFrame(loop)
-  }
-
-  loop()
-}
-
-// ---------------------------------------------------------------------------
+// =============================================================================
 // UNICO listener globale su #app: siccome #app non viene mai distrutto
 // (solo il suo contenuto interno cambia), questo listener funziona sempre,
 // indipendentemente da quante volte richiami mostraHub()/mostraEnigmaX().
-// ---------------------------------------------------------------------------
+// =============================================================================
 
 document.querySelector('#app').addEventListener('click', function (event) {
   // click su "Vai alla home" nel messaggio di vittoria
@@ -337,6 +1221,45 @@ document.querySelector('#app').addEventListener('click', function (event) {
     return
   }
 
+  // click sul bottone "Verifica" del codice finale, nella home
+  if (event.target.closest('.controlla-codice-finale')) {
+    controllaCodiceFinale()
+    return
+  }
+
+  // click sul bottone "Rivedi la pagina finale", nella home (solo se già sbloccata)
+  if (event.target.closest('.vai-pagina-finale')) {
+    mostraPaginaFinale()
+    return
+  }
+
+  // click su un puntino della timeline viaggi
+  const puntoViaggio = event.target.closest('.punto-viaggio')
+  if (puntoViaggio) {
+    mostraDettaglioViaggio(Number(puntoViaggio.dataset.indice))
+    return
+  }
+
+  // click su "Torna alla timeline" nel dettaglio di un viaggio
+  if (event.target.closest('.vai-viaggi')) {
+    mostraViaggi()
+    return
+  }
+
+  // "Quanto mi conosci": click su un'opzione di risposta
+  const elementoOpzioneQMC = event.target.closest('.opzione-qmc')
+  if (elementoOpzioneQMC && !elementoOpzioneQMC.classList.contains('disabilitata')) {
+    gestisciClickOpzioneQMC(elementoOpzioneQMC)
+    return
+  }
+
+  // "Quanto mi conosci": click su "Rigioca" nella schermata del risultato
+  if (event.target.closest('.rigioca-qmc')) {
+    mostraQuantoMiConosci()
+    return
+  }
+
+
   // click su un bottone "Play" dell'hub
   const card = event.target.closest('.enigma-card')
   if (card && event.target.closest('button')) {
@@ -344,35 +1267,91 @@ document.querySelector('#app').addEventListener('click', function (event) {
     if (numero === '1') mostraEnigma1()
     else if (numero === '2') mostraEnigma2()
     else if (numero === '3') mostraEnigma3()
-    else console.log('Enigma ' + numero + ' non ancora implementato')
+    else if (numero === '4') mostraEnigma4()
+    else if (numero === '5') mostraEnigma5()
+    else if (numero === '6') mostraEnigma6()
     return
   }
 
-  // click su una carta del memory
+  // Enigma 2: click su una carta del memory
   const elementoCarta = event.target.closest('.carta')
   if (elementoCarta) {
     gestisciClickCarta(elementoCarta)
     return
   }
+
+  // Enigma 3: click su un'opzione del quiz
+  const elementoOpzione = event.target.closest('.opzione-quiz')
+  if (elementoOpzione) {
+    gestisciClickOpzione(elementoOpzione)
+    return
+  }
+
+  // Enigma 4: click su un evento della timeline
+  const elementoEvento = event.target.closest('.evento-timeline')
+  if (elementoEvento) {
+    gestisciClickEvento(elementoEvento)
+    return
+  }
+
+  // Enigma 5: click su una tessera del puzzle scorrevole
+  const elementoTessera = event.target.closest('.tessera')
+  if (elementoTessera) {
+    gestisciClickTessera(elementoTessera)
+    return
+  }
+
+  // Enigma 6: click su una lettera
+  const elementoLettera = event.target.closest('.lettera-tile')
+  if (elementoLettera) {
+    gestisciClickLettera(elementoLettera)
+    return
+  }
 })
 
-// ---------------------------------------------------------------------------
+// Home: invio del codice finale anche premendo Invio nel suo campo
+document.addEventListener('keydown', function (event) {
+  if (event.code === 'Enter' && event.target.id === 'inputCodiceFinale') {
+    controllaCodiceFinale()
+  }
+})
+
+// =============================================================================
 // Listener separato per la navbar: è fuori da #app, quindi serve un
 // listener dedicato. Impediamo la navigazione reale del browser
 // (preventDefault) e gestiamo il click via JS come per il resto del sito.
-// ---------------------------------------------------------------------------
+// =============================================================================
 
 document.querySelector('.hub-nav').addEventListener('click', function (event) {
   const link = event.target.closest('a')
   if (!link) return
 
-  event.preventDefault() // impedisce al browser di tentare di caricare "page1" ecc.
+  event.preventDefault()
 
   if (link.getAttribute('href') === 'page1') {
     mostraHub()
   }
-  // le altre voci (Spiegazione, Chi siamo, Contatti) non sono ancora collegate:
-  // per ora un click su di esse non fa nulla, verranno gestite quando le costruirai.
+  if (link.getAttribute('href') === 'page2') {
+    mostraSpiegazione()
+  }
+  if (link.getAttribute('href') === 'page3') {
+    mostraChiSiamo()
+  }
+  if (link.getAttribute('href') === 'page4') {
+    mostraContatti()
+  }
+  if (link.getAttribute('href') === 'page5') {
+    toggleVisibilitaLettoreCanzone()
+  }
+  if (link.getAttribute('href') === 'page6') {
+    mostraViaggi()
+  }
+  if (link.getAttribute('href') === 'page7') {
+    mostraCose()
+  }
+  if (link.getAttribute('href') === 'page8') {
+    mostraQuantoMiConosci()
+  }
 })
 
 mostraHub()
