@@ -12,7 +12,7 @@ function mostraSpiegazione() {
     <div class="pagina-spiegazione">
       <h1>Come funziona</h1>
 
-      <p>Nella home trovi <strong>6 enigmi</strong>. Ogni enigma è un piccolo gioco diverso dagli altri: un cifrario, un memory, un quiz, una linea del tempo, un puzzle scorrevole e un gioco di parole.</p>
+      <p>Nella home trovi <strong>6 enigmi</strong>. Ogni enigma è un piccolo gioco diverso dagli altri: un puzzle fotografico, un memory, un quiz, una linea del tempo, delle frasi da completare e una cassaforte da aprire.</p>
 
       <p>Risolvendo un enigma, alla fine ti verrà mostrata <strong>una cifra</strong> di un codice segreto a 6 numeri. Ogni enigma rivela una cifra diversa, in base alla sua posizione: il primo enigma dà la prima cifra, il secondo la seconda, e così via.</p>
 
@@ -111,6 +111,32 @@ function mostraCose() {
         <img src="${immagineCestino}" class="immagine-cestino" alt="Cestino da picnic" />
         ${oggettiHTML}
       </div>
+      <button class="vai-home">Torna alla home</button>
+    </div>
+  `
+}
+
+// =============================================================================
+// PAGINA "REGALO": una pagina con l'immagine del regalo, raggiungibile dalla
+// navbar solo dopo aver inserito il codice giusto.
+//
+// *** DA PERSONALIZZARE ***: titolo, immagine (sostituisci l'URL con la foto
+// del regalo) e testo qui sotto. Il testo è facoltativo: se lo lasci vuoto ('')
+// non compare.
+// =============================================================================
+
+const titoloRegalo = '[TITOLO DA PERSONALIZZARE]'
+const immagineRegalo = 'https://picsum.photos/700?random=500' // sostituisci con l'immagine del regalo
+const testoRegalo = '[TESTO DA PERSONALIZZARE]'
+
+function mostraRegalo() {
+  document.querySelector('#app').innerHTML = `
+    <div class="pagina-regalo">
+      <h1>${titoloRegalo}</h1>
+      <div class="cornice-regalo">
+        <img src="${immagineRegalo}" class="immagine-regalo" alt="Il regalo" />
+      </div>
+      ${testoRegalo ? `<p class="testo-regalo">${testoRegalo}</p>` : ''}
       <button class="vai-home">Torna alla home</button>
     </div>
   `
@@ -222,6 +248,13 @@ function mostraContatti() {
 }
 
 function mostraHub() {
+  // Una volta inserito il codice giusto, "home" porta alla pagina che compare
+  // dopo il codice (la lettera finale), non più agli enigmi.
+  if (codiceSbloccato) {
+    mostraPaginaFinale()
+    return
+  }
+
   document.querySelector('#app').innerHTML = `
     <header class="hub-header">
       <h1 class="titolo">Titolo</h1>
@@ -242,7 +275,6 @@ function mostraHub() {
       <input type="text" id="inputCodiceFinale" maxlength="6" class="input-codice-finale" placeholder="______" />
       <button class="controlla-codice-finale">Verifica</button>
       <p id="erroreCodiceFinale" class="errore-codice-finale"></p>
-      ${codiceSbloccato ? '<button class="vai-pagina-finale">Rivedi la pagina finale</button>' : ''}
     </section>
   `
 }
@@ -269,6 +301,20 @@ const cifreCodice = [
 // così dalla home si può tornare a rivedere la pagina finale.
 let codiceSbloccato = false
 
+// Le voci "Viaggi" (page6) e "Cose" (page7) della navbar restano nascoste
+// finché non viene inserito il codice giusto. Si agisce sulle voci già
+// presenti in index.html, quindi l'HTML non va modificato.
+const vociNavbarRiservate = ['page6', 'page7']
+
+function aggiornaVisibilitaVociRiservate() {
+  vociNavbarRiservate.forEach(function (href) {
+    const link = document.querySelector(`.hub-nav a[href="${href}"]`)
+    if (!link) return
+    const voce = link.closest('li') || link
+    voce.style.display = codiceSbloccato ? '' : 'none'
+  })
+}
+
 function controllaCodiceFinale() {
   const input = document.querySelector('#inputCodiceFinale')
   const valoreInserito = input.value.trim()
@@ -276,6 +322,7 @@ function controllaCodiceFinale() {
 
   if (valoreInserito === codiceCorretto) {
     codiceSbloccato = true
+    aggiornaVisibilitaVociRiservate()
     sbloccaLettoreCanzone()
     mostraPaginaFinale()
   } else {
@@ -308,7 +355,6 @@ function mostraPaginaFinale() {
         <img src="${fotoFinale}" class="foto-finale" alt="Noi due" />
       </div>
       <p class="testo-finale">${testoFinale}</p>
-      <button class="vai-home">Torna alla home</button>
     </div>
   `
 }
@@ -335,13 +381,15 @@ const urlCanzone = '[PERCORSO DEL FILE MP3 DA PERSONALIZZARE — es. /canzone.mp
 
 function sbloccaLettoreCanzone() {
   // Una volta inserito il codice giusto, la navbar si "semplifica": restano
-  // visibili SOLO Viaggi e Canzone (Home/Spiegazione/Chi siamo/Contatti
+  // visibili SOLO Viaggi, Cose, Regalo e Canzone (Home/Spiegazione/Chi siamo/Contatti
   // scompaiono dal menu — restano comunque raggiungibili dai bottoni "Torna
   // alla home" dentro le pagine).
   const listaLink = document.querySelector('#listaLink')
   if (listaLink) {
     listaLink.innerHTML = `
       <li><a href="page6">Viaggi</a></li>
+      <li><a href="page7">Cose</a></li>
+      <li><a href="page9">Regalo</a></li>
       <li><a href="page5">Canzone</a></li>
     `
   }
@@ -366,64 +414,147 @@ function toggleVisibilitaLettoreCanzone() {
 }
 
 // =============================================================================
-// PAGINA "I NOSTRI VIAGGI": una linea del tempo dal 2019 a oggi, con un
+// PAGINA "I NOSTRI VIAGGI": una linea del tempo con un
 // puntino per ogni viaggio. Al passaggio del mouse (gestito in puro CSS,
 // nessun JS necessario per il tooltip) appare il nome del viaggio. Al click
 // si apre una schermata a pieno sfondo con le 4 foto di quel viaggio, un
 // gradiente sopra (colore in base al viaggio) per rendere leggibile il testo,
 // e una cornice colorata in tema.
 //
-// *** DA PERSONALIZZARE ***: modifica/aggiungi viaggi nell'array "viaggi" —
-// anno, nome, le 4 foto vere, e il colore tema. "Parigi" qui sotto è
-// l'esempio che hai chiesto, con foto placeholder casuali da sostituire.
+// *** DA PERSONALIZZARE ***: modifica/aggiungi viaggi nell'array "viaggi"
+// (vedi il commento sopra l'array).
 // =============================================================================
 
 const annoInizioTimeline = 2019
 const annoFineTimeline = new Date().getFullYear()
 
+// *** DA PERSONALIZZARE ***: per ogni viaggio, le 4 foto (ora sono foto
+// casuali da sostituire con le vostre) e, se vuoi, l'anno (scrivi "anno: 2022").
+// I viaggi sono nell'ordine in cui compaiono sulla linea. Finché non metti gli
+// anni, i puntini sono distribuiti in modo uniforme; se li metti TUTTI, la
+// posizione si calcola dall'anno, e sulla linea compaiono anche gli anni.
+// "colore" è il colore del tema della pagina di quel viaggio.
 const viaggi = [
   {
-    anno: 2019,
-    nome: 'Parigi',
-    colore: '#1a2a52', // blu notte — tema "Parigi"
+    anno: null,
+    nome: 'Venezia',
+    colore: '#2f6b7a',
     foto: [
-      'https://picsum.photos/400?random=101',
-      'https://picsum.photos/400?random=102',
-      'https://picsum.photos/400?random=103',
-      'https://picsum.photos/400?random=104'
+      'https://picsum.photos/400?random=200',
+      'https://picsum.photos/400?random=201',
+      'https://picsum.photos/400?random=202',
+      'https://picsum.photos/400?random=203'
     ]
   },
   {
-    anno: 2021,
-    nome: '[VIAGGIO DA PERSONALIZZARE]',
-    colore: '#7a4b2f',
+    anno: null,
+    nome: 'Verona',
+    colore: '#a24a36',
     foto: [
-      'https://picsum.photos/400?random=105',
-      'https://picsum.photos/400?random=106',
-      'https://picsum.photos/400?random=107',
-      'https://picsum.photos/400?random=108'
+      'https://picsum.photos/400?random=204',
+      'https://picsum.photos/400?random=205',
+      'https://picsum.photos/400?random=206',
+      'https://picsum.photos/400?random=207'
     ]
   },
   {
-    anno: 2023,
-    nome: '[VIAGGIO DA PERSONALIZZARE]',
-    colore: '#2f6b4f',
+    anno: null,
+    nome: 'Toscana',
+    colore: '#6b7a3a',
     foto: [
-      'https://picsum.photos/400?random=109',
-      'https://picsum.photos/400?random=110',
-      'https://picsum.photos/400?random=111',
-      'https://picsum.photos/400?random=112'
+      'https://picsum.photos/400?random=208',
+      'https://picsum.photos/400?random=209',
+      'https://picsum.photos/400?random=210',
+      'https://picsum.photos/400?random=211'
+    ]
+  },
+  {
+    anno: null,
+    nome: 'New York',
+    colore: '#2e3a4d',
+    foto: [
+      'https://picsum.photos/400?random=212',
+      'https://picsum.photos/400?random=213',
+      'https://picsum.photos/400?random=214',
+      'https://picsum.photos/400?random=215'
+    ]
+  },
+  {
+    anno: null,
+    nome: 'Cervo',
+    colore: '#2a5d8a',
+    foto: [
+      'https://picsum.photos/400?random=216',
+      'https://picsum.photos/400?random=217',
+      'https://picsum.photos/400?random=218',
+      'https://picsum.photos/400?random=219'
+    ]
+  },
+  {
+    anno: null,
+    nome: 'Budapest',
+    colore: '#7a2a3a',
+    foto: [
+      'https://picsum.photos/400?random=220',
+      'https://picsum.photos/400?random=221',
+      'https://picsum.photos/400?random=222',
+      'https://picsum.photos/400?random=223'
+    ]
+  },
+  {
+    anno: null,
+    nome: 'Lisbona',
+    colore: '#b0832a',
+    foto: [
+      'https://picsum.photos/400?random=224',
+      'https://picsum.photos/400?random=225',
+      'https://picsum.photos/400?random=226',
+      'https://picsum.photos/400?random=227'
+    ]
+  },
+  {
+    anno: null,
+    nome: 'Cracovia',
+    colore: '#4d3a5c',
+    foto: [
+      'https://picsum.photos/400?random=232',
+      'https://picsum.photos/400?random=233',
+      'https://picsum.photos/400?random=234',
+      'https://picsum.photos/400?random=235'
+    ]
+  },
+  {
+    anno: null,
+    nome: 'Valencia',
+    colore: '#c0602a',
+    foto: [
+      'https://picsum.photos/400?random=228',
+      'https://picsum.photos/400?random=229',
+      'https://picsum.photos/400?random=230',
+      'https://picsum.photos/400?random=231'
     ]
   }
 ]
 
-function calcolaPosizionePercento(anno) {
-  return ((anno - annoInizioTimeline) / (annoFineTimeline - annoInizioTimeline)) * 100
+// Se tutti i viaggi hanno l'anno, la linea è una vera scala temporale; altrimenti
+// i puntini sono distribuiti in modo uniforme, nell'ordine dell'array.
+function tuttiViaggiHannoAnno() {
+  return viaggi.every(function (viaggio) { return viaggio.anno })
+}
+
+function calcolaPosizionePercento(viaggio, indice) {
+  if (tuttiViaggiHannoAnno()) {
+    return ((viaggio.anno - annoInizioTimeline) / (annoFineTimeline - annoInizioTimeline)) * 100
+  }
+  if (viaggi.length === 1) return 50
+  return 4 + (indice / (viaggi.length - 1)) * 92 // tra il 4% e il 96%
 }
 
 function mostraViaggi() {
+  const conAnni = tuttiViaggiHannoAnno()
+
   const puntiHTML = viaggi.map(function (viaggio, indice) {
-    const posizione = calcolaPosizionePercento(viaggio.anno)
+    const posizione = calcolaPosizionePercento(viaggio, indice)
     return `
       <div class="punto-viaggio" style="left:${posizione}%" data-indice="${indice}">
         <span class="tooltip-viaggio">${viaggio.nome}</span>
@@ -431,14 +562,16 @@ function mostraViaggi() {
     `
   }).join('')
 
+  const etichetteHTML = conAnni ? `
+        <span class="etichetta-anno etichetta-anno-inizio">${annoInizioTimeline}</span>
+        <span class="etichetta-anno etichetta-anno-fine">${annoFineTimeline}</span>` : ''
+
   document.querySelector('#app').innerHTML = `
     <div class="pagina-viaggi">
       <h1>I nostri viaggi</h1>
       <div class="timeline-viaggi-container">
         <div class="linea-timeline"></div>
-        ${puntiHTML}
-        <span class="etichetta-anno etichetta-anno-inizio">${annoInizioTimeline}</span>
-        <span class="etichetta-anno etichetta-anno-fine">${annoFineTimeline}</span>
+        ${puntiHTML}${etichetteHTML}
       </div>
       <button class="vai-home">Torna alla home</button>
     </div>
@@ -458,7 +591,7 @@ function mostraDettaglioViaggio(indice) {
       <div class="overlay-gradiente-viaggio" style="background:linear-gradient(to bottom, transparent, ${viaggio.colore})"></div>
       <div class="contenuto-dettaglio-viaggio">
         <h1>${viaggio.nome}</h1>
-        <p>${viaggio.anno}</p>
+        ${viaggio.anno ? `<p>${viaggio.anno}</p>` : ''}
         <button class="vai-viaggi">Torna alla timeline</button>
       </div>
     </div>
@@ -481,7 +614,7 @@ function mescola(array) {
 }
 
 // =============================================================================
-// ENIGMA 1 (puzzle a incastro): una vostra foto divisa in 16 pezzi (griglia
+// ENIGMA 1 (puzzle fotografico): una vostra foto divisa in 16 pezzi (griglia
 // 4x4), mescolati in un "vassoio"; si trascinano — con mouse O con un dito su
 // smartphone — nella griglia vuota, nel posto giusto.
 //
@@ -495,30 +628,25 @@ function mescola(array) {
 // stessa immagine intera come sfondo, spostata con background-position —
 // lo stesso trucco già accennato nel commento dell'Enigma 5.
 //
-// Due dettagli aggiunti apposta:
-// 1) "latoPezzoPuzzle1" è una dimensione FISSA in pixel, usata sia per i
-//    pezzi nel vassoio sia per quelli nella griglia: così un pezzo non
-//    cambia mai grandezza spostandosi, e la griglia stessa ha sempre
-//    esattamente la dimensione giusta per contenerli (calcolata da JS,
-//    non un numero fisso scritto a mano nel CSS).
-// 2) Ogni pezzo ha una vera forma a incastro (linguette/incavi), disegnata
-//    con un "ritaglio" CSS (clip-path) generato automaticamente: i bordi
-//    interni della griglia vengono decisi una sola volta quando il puzzle
-//    viene creato, così il pezzo A e il pezzo B che si toccano hanno
-//    sempre forme complementari (dove uno sporge, l'altro ha l'incavo).
+// "latoPezzoPuzzle1" è la dimensione, in pixel, di OGNI pezzo: la stessa nel
+// vassoio e nella griglia, così un pezzo non cambia mai grandezza spostandosi.
+// Viene calcolata a ogni disegno: al massimo 124px, ma più piccola se lo
+// schermo non basta: su schermi larghi griglia e vassoio (4 colonne) stanno
+// affiancati e devono entrare anche in altezza, senza scrollare; su schermi
+// stretti (smartphone) il vassoio va sotto la griglia.
 //
 // *** DA PERSONALIZZARE ***: immaginePuzzle1 con una vostra foto vera.
 // =============================================================================
 
 const immaginePuzzle1 = 'https://picsum.photos/450?random=400'
 const dimensionePuzzle1 = 4 // griglia 4x4 = 16 pezzi
-const latoPezzoPuzzle1 = 76 // dimensione fissa, in pixel, di OGNI pezzo
+const latoMassimoPezzoPuzzle1 = 124
+let latoPezzoPuzzle1 = latoMassimoPezzoPuzzle1
 
 let enigma1GiaCreato = false
 let enigma1Completato = false
 let slotPuzzle1 = [] // 16 posizioni: null (vuota) oppure l'id del pezzo che occupa quella casella
 let vassoioPuzzle1 = [] // id dei pezzi ancora nel vassoio, mescolati
-let formePezziPuzzle1 = [] // per ogni pezzo, {sopra,sotto,sinistra,destra}: 0 = bordo dritto, 1 = linguetta, -1 = incavo
 
 function creaPuzzle1() {
   const totalePezzi = dimensionePuzzle1 * dimensionePuzzle1
@@ -526,138 +654,59 @@ function creaPuzzle1() {
   vassoioPuzzle1 = mescola(
     Array.from({ length: totalePezzi }, function (_, i) { return i })
   )
-
-  // Decidiamo, UNA SOLA VOLTA, se ogni bordo INTERNO della griglia ha una
-  // linguetta o un incavo, così i due pezzi che condividono quel bordo
-  // ottengono forme opposte (dove uno sporge, l'altro è incavato: combaciano).
-  const bordiOrizzontali = [] // bordiOrizzontali[riga][colonna]: confine tra la riga e quella sotto
-  for (let riga = 0; riga < dimensionePuzzle1 - 1; riga++) {
-    bordiOrizzontali.push([])
-    for (let colonna = 0; colonna < dimensionePuzzle1; colonna++) {
-      bordiOrizzontali[riga].push(Math.random() < 0.5 ? 1 : -1)
-    }
-  }
-
-  const bordiVerticali = [] // bordiVerticali[riga][colonna]: confine tra la colonna e quella a destra
-  for (let riga = 0; riga < dimensionePuzzle1; riga++) {
-    bordiVerticali.push([])
-    for (let colonna = 0; colonna < dimensionePuzzle1 - 1; colonna++) {
-      bordiVerticali[riga].push(Math.random() < 0.5 ? 1 : -1)
-    }
-  }
-
-  formePezziPuzzle1 = []
-  for (let idPezzo = 0; idPezzo < totalePezzi; idPezzo++) {
-    const riga = Math.floor(idPezzo / dimensionePuzzle1)
-    const colonna = idPezzo % dimensionePuzzle1
-
-    formePezziPuzzle1.push({
-      sopra: riga === 0 ? 0 : -bordiOrizzontali[riga - 1][colonna],
-      sotto: riga === dimensionePuzzle1 - 1 ? 0 : bordiOrizzontali[riga][colonna],
-      sinistra: colonna === 0 ? 0 : -bordiVerticali[riga][colonna - 1],
-      destra: colonna === dimensionePuzzle1 - 1 ? 0 : bordiVerticali[riga][colonna]
-    })
-  }
 }
 
-// Disegna UN lato del pezzo, da (x1,y1) a (x2,y2): se "tipo" è 0 resta un
-// bordo dritto; altrimenti ci costruisce sopra una "linguetta" rotonda che
-// sporge verso l'esterno (tipo 1) o un incavo verso l'interno (tipo -1).
-function segmentoBordoPuzzle1(x1, y1, x2, y2, tipo) {
-  if (tipo === 0) {
-    return ` L ${x2} ${y2}`
+function calcolaLatoPezzoPuzzle1() {
+  const larghezza = window.innerWidth
+  const altezza = window.innerHeight
+  let lato = latoMassimoPezzoPuzzle1
+
+  if (larghezza >= 900) {
+    // griglia (4 pezzi) + spazio + vassoio (4 pezzi + padding) in orizzontale
+    lato = Math.min(lato, Math.floor((larghezza - 170) / 8))
+    // vassoio alto 4 righe: deve entrare nello schermo, meno intestazioni
+    lato = Math.min(lato, Math.floor((altezza - 270) / 4))
+  } else {
+    lato = Math.min(lato, Math.floor((larghezza - 40) / dimensionePuzzle1))
   }
 
-  const dx = x2 - x1
-  const dy = y2 - y1
-  const lunghezza = Math.hypot(dx, dy)
-  const ux = dx / lunghezza
-  const uy = dy / lunghezza
-  // Il percorso del pezzo gira in senso orario: la normale che punta verso
-  // l'ESTERNO del pezzo si ottiene ruotando la direzione del bordo di -90°.
-  const nx = uy
-  const ny = -ux
-
-  // Raggio della linguetta: con due curve di Bézier cubiche (ognuna un
-  // quarto di cerchio, costante di kappa 0.5523) disegniamo una vera
-  // semicirconferenza invece di una punta aguzza, così anche quando due
-  // incavi si trovano su lati opposti dello stesso pezzo non si "mangiano"
-  // a vicenda creando la forma a clessidra.
-  const raggio = lunghezza * 0.14
-  const k = 0.5523
-  const verso = tipo
-
-  const medioX = (x1 + x2) / 2
-  const medioY = (y1 + y2) / 2
-
-  const collo1 = { x: medioX - ux * raggio, y: medioY - uy * raggio }
-  const collo2 = { x: medioX + ux * raggio, y: medioY + uy * raggio }
-  const apice = { x: medioX + nx * raggio * verso, y: medioY + ny * raggio * verso }
-
-  const c1 = { x: collo1.x + nx * raggio * verso * k, y: collo1.y + ny * raggio * verso * k }
-  const c2 = { x: apice.x - ux * raggio * k, y: apice.y - uy * raggio * k }
-  const c3 = { x: apice.x + ux * raggio * k, y: apice.y + uy * raggio * k }
-  const c4 = { x: collo2.x + nx * raggio * verso * k, y: collo2.y + ny * raggio * verso * k }
-
-  return ` L ${collo1.x} ${collo1.y}` +
-    ` C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${apice.x} ${apice.y}` +
-    ` C ${c3.x} ${c3.y} ${c4.x} ${c4.y} ${collo2.x} ${collo2.y}` +
-    ` L ${x2} ${y2}`
+  return Math.max(50, lato)
 }
 
-// Costruisce l'intero contorno del pezzo (i 4 lati, uno dopo l'altro) e lo
-// restituisce come valore pronto per la proprietà CSS clip-path.
-function generaClipPathPezzo(idPezzo) {
-  const forma = formePezziPuzzle1[idPezzo]
-  const L = latoPezzoPuzzle1
-
-  let percorso = 'M 0 0'
-  percorso += segmentoBordoPuzzle1(0, 0, L, 0, forma.sopra)
-  percorso += segmentoBordoPuzzle1(L, 0, L, L, forma.destra)
-  percorso += segmentoBordoPuzzle1(L, L, 0, L, forma.sotto)
-  percorso += segmentoBordoPuzzle1(0, L, 0, 0, forma.sinistra)
-  percorso += ' Z'
-
-  return `path('${percorso}')`
-}
-
-// Calcola lo sfondo del pezzo "idPezzo": l'immagine intera, ingrandita e
-// spostata in modo che si veda solo il riquadro corrispondente a quel pezzo,
-// più il ritaglio (clip-path) che gli dà la forma a incastro.
-function stileSfondoPezzoPuzzle1(idPezzo) {
+// Stile del pezzo "idPezzo": l'immagine intera, ingrandita e spostata in
+// modo che si veda solo il riquadro corrispondente a quel pezzo.
+function stilePezzoPuzzle1(idPezzo) {
   const riga = Math.floor(idPezzo / dimensionePuzzle1)
   const colonna = idPezzo % dimensionePuzzle1
   const passo = 100 / (dimensionePuzzle1 - 1)
-  const clipPath = generaClipPathPezzo(idPezzo)
 
-  return `width:${latoPezzoPuzzle1}px; height:${latoPezzoPuzzle1}px; background-image:url('${immaginePuzzle1}'); background-size:${dimensionePuzzle1 * 100}% ${dimensionePuzzle1 * 100}%; background-position:${colonna * passo}% ${riga * passo}%; clip-path:${clipPath}; -webkit-clip-path:${clipPath};`
+  return `width:${latoPezzoPuzzle1}px; height:${latoPezzoPuzzle1}px; background-image:url('${immaginePuzzle1}'); background-size:${dimensionePuzzle1 * 100}% ${dimensionePuzzle1 * 100}%; background-position:${colonna * passo}% ${riga * passo}%;`
 }
 
 function disegnaPuzzle1() {
+  latoPezzoPuzzle1 = calcolaLatoPezzoPuzzle1()
+  const stileSlot = `width:${latoPezzoPuzzle1}px; height:${latoPezzoPuzzle1}px;`
+
   const slotHTML = slotPuzzle1.map(function (idPezzo, indice) {
-    const stileSlot = `width:${latoPezzoPuzzle1}px; height:${latoPezzoPuzzle1}px;`
     if (idPezzo === null) {
       return `<div class="slot-puzzle1" data-indice="${indice}" style="${stileSlot}"></div>`
     }
-    return `
-      <div class="slot-puzzle1" data-indice="${indice}" style="${stileSlot}">
-        <div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="slot" data-da-indice="${indice}" style="${stileSfondoPezzoPuzzle1(idPezzo)}"></div>
-      </div>
-    `
+    return `<div class="slot-puzzle1" data-indice="${indice}" style="${stileSlot}"><div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="slot" data-da-indice="${indice}" style="${stilePezzoPuzzle1(idPezzo)}"></div></div>`
   }).join('')
 
   const vassoioHTML = vassoioPuzzle1.map(function (idPezzo) {
-    return `<div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="vassoio" style="${stileSfondoPezzoPuzzle1(idPezzo)}"></div>`
+    return `<div class="pezzo-puzzle1" data-pezzo="${idPezzo}" data-da="vassoio" style="${stilePezzoPuzzle1(idPezzo)}"></div>`
   }).join('')
 
   const latoGriglia = dimensionePuzzle1 * latoPezzoPuzzle1
+  const larghezzaVassoio = 4 * latoPezzoPuzzle1 + 3 * 14 + 2 * 14 // 4 pezzi per riga
 
   document.querySelector('#app').innerHTML = `
     <div class="puzzle1-container">
       <p class="istruzioni-puzzle1">Trascina i pezzi nella griglia per ricomporre la foto</p>
       <div class="puzzle1-area">
         <div class="griglia-puzzle1" style="grid-template-columns:repeat(${dimensionePuzzle1}, ${latoPezzoPuzzle1}px); grid-template-rows:repeat(${dimensionePuzzle1}, ${latoPezzoPuzzle1}px); width:${latoGriglia}px; height:${latoGriglia}px;">${slotHTML}</div>
-        <div class="vassoio-puzzle1">${vassoioHTML}</div>
+        <div class="vassoio-puzzle1" style="width:${larghezzaVassoio}px; max-width:100%;">${vassoioHTML}</div>
       </div>
     </div>
   `
@@ -754,12 +803,22 @@ document.addEventListener('pointerup', function (event) {
   // Se nel frattempo si è usciti dalla pagina del puzzle, non facciamo nulla.
   if (!document.querySelector('.puzzle1-container')) return
 
+  // Lo slot di destinazione lo ricaviamo dalla posizione rispetto alla
+  // griglia (e non da elementFromPoint): le linguette dei pezzi vicini
+  // sporgono sopra gli slot confinanti e darebbero lo slot sbagliato.
+  const griglia = document.querySelector('.griglia-puzzle1')
+  const rettangolo = griglia.getBoundingClientRect()
+  const x = event.clientX - rettangolo.left
+  const y = event.clientY - rettangolo.top
+  const dentroGriglia = x >= 0 && y >= 0 && x < rettangolo.width && y < rettangolo.height
+
   const elementoSotto = document.elementFromPoint(event.clientX, event.clientY)
-  const slotDestinazione = elementoSotto ? elementoSotto.closest('.slot-puzzle1') : null
   const vassoioDestinazione = elementoSotto ? elementoSotto.closest('.vassoio-puzzle1') : null
 
-  if (slotDestinazione) {
-    spostaPezzoPuzzle1(trascinamento, { tipo: 'slot', indice: Number(slotDestinazione.dataset.indice) })
+  if (dentroGriglia) {
+    const colonna = Math.floor(x / latoPezzoPuzzle1)
+    const riga = Math.floor(y / latoPezzoPuzzle1)
+    spostaPezzoPuzzle1(trascinamento, { tipo: 'slot', indice: riga * dimensionePuzzle1 + colonna })
   } else if (vassoioDestinazione) {
     spostaPezzoPuzzle1(trascinamento, { tipo: 'vassoio' })
   } else {
@@ -1098,55 +1157,64 @@ function gestisciClickEvento(elementoEvento) {
 }
 
 // =============================================================================
-// ENIGMA 5 (puzzle scorrevole 3x3): 8 tessere numerate + uno spazio vuoto.
-// Click su una tessera adiacente al vuoto per spostarla.
+// ENIGMA 5 (completa la frase): ogni frase ha una parola mancante; si sceglie
+// la parola giusta tra più opzioni. Quando tutte le frasi sono completate,
+// l'enigma è risolto. Un'opzione sbagliata si "spegne" e resta spenta.
 //
-// *** DA PERSONALIZZARE ***: per usare una foto vera al posto dei numeri,
-// vedi il commento dentro disegnaPuzzle() più sotto. Più il messaggio finale.
+// *** DA PERSONALIZZARE ***: tutto in "frasiEnigma5" è un segnaposto.
+//   - "prima" e "dopo": il testo prima e dopo la parola mancante
+//   - "opzioni": le parole tra cui scegliere (anche più o meno di 3)
+//   - "corretta": la POSIZIONE (0 = la prima, 1 = la seconda...) di quella giusta
+// Puoi aggiungere o togliere frasi: il resto si adatta da solo.
 // =============================================================================
 
-let puzzleStato = []
-let puzzleGiaCreato = false
-let puzzleCompletato = false
+const frasiEnigma5 = [
+  { prima: '[Frase 1: testo prima]', dopo: '[testo dopo]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C'], corretta: 0 },
+  { prima: '[Frase 2: testo prima]', dopo: '[testo dopo]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C'], corretta: 1 },
+  { prima: '[Frase 3: testo prima]', dopo: '[testo dopo]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C'], corretta: 2 },
+  { prima: '[Frase 4: testo prima]', dopo: '[testo dopo]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C'], corretta: 0 },
+  { prima: '[Frase 5: testo prima]', dopo: '[testo dopo]', opzioni: ['Opzione A', 'Opzione B', 'Opzione C'], corretta: 1 }
+]
 
-function posizioniAdiacenti(indice) {
-  const riga = Math.floor(indice / 3)
-  const colonna = indice % 3
-  const adiacenti = []
-  if (riga > 0) adiacenti.push(indice - 3)
-  if (riga < 2) adiacenti.push(indice + 3)
-  if (colonna > 0) adiacenti.push(indice - 1)
-  if (colonna < 2) adiacenti.push(indice + 1)
-  return adiacenti
+let enigma5Completato = false
+let frasiRisolteEnigma5 = [] // per ogni frase: true se già completata
+let erroriEnigma5 = [] // per ogni frase: elenco delle opzioni sbagliate già provate
+
+function creaEnigma5() {
+  frasiRisolteEnigma5 = frasiEnigma5.map(function () { return false })
+  erroriEnigma5 = frasiEnigma5.map(function () { return [] })
 }
 
-function creaPuzzle() {
-  puzzleStato = [1, 2, 3, 4, 5, 6, 7, 8, null] // stato risolto: null è lo spazio vuoto
+function disegnaEnigma5() {
+  const frasiHTML = frasiEnigma5.map(function (frase, indiceFrase) {
+    const risolta = frasiRisolteEnigma5[indiceFrase]
+    const parola = risolta
+      ? `<span class="parola-frase trovata">${frase.opzioni[frase.corretta]}</span>`
+      : '<span class="parola-frase vuota">&nbsp;</span>'
 
-  // Mescoliamo facendo 200 mosse valide casuali a partire dallo stato risolto:
-  // così il puzzle è SEMPRE risolvibile (mescolare a caso le posizioni non lo garantirebbe).
-  for (let i = 0; i < 200; i++) {
-    const indiceVuoto = puzzleStato.indexOf(null)
-    const adiacenti = posizioniAdiacenti(indiceVuoto)
-    const scelta = adiacenti[Math.floor(Math.random() * adiacenti.length)]
-    puzzleStato[indiceVuoto] = puzzleStato[scelta]
-    puzzleStato[scelta] = null
-  }
-}
+    const opzioniHTML = risolta ? '' : `
+      <div class="opzioni-frase">
+        ${frase.opzioni.map(function (testo, indiceOpzione) {
+          const sbagliata = erroriEnigma5[indiceFrase].includes(indiceOpzione)
+          return `<button class="opzione-frase${sbagliata ? ' sbagliata' : ''}" data-frase="${indiceFrase}" data-opzione="${indiceOpzione}"${sbagliata ? ' disabled' : ''}>${testo}</button>`
+        }).join('')}
+      </div>
+    `
 
-function disegnaPuzzle() {
-  const html = puzzleStato.map(function (valore, indice) {
-    if (valore === null) {
-      return `<div class="tessera vuota" data-indice="${indice}"></div>`
-    }
-    // *** PER USARE UNA FOTO VERA ***: invece di "${valore}" come testo,
-    // genera uno sfondo con background-position calcolato dal numero,
-    // es. style="background-image:url('...'); background-position:...".
-    // Per ora resta con i numeri placeholder.
-    return `<div class="tessera" data-indice="${indice}">${valore}</div>`
+    return `
+      <div class="frase-completa${risolta ? ' risolta' : ''}">
+        <p class="testo-frase">${frase.prima} ${parola} ${frase.dopo}</p>
+        ${opzioniHTML}
+      </div>
+    `
   }).join('')
 
-  document.querySelector('#app').innerHTML = `<div class="puzzle-grid">${html}</div>`
+  document.querySelector('#app').innerHTML = `
+    <div class="frasi-container">
+      <p class="istruzioni-frasi">Completa ogni frase con la parola giusta</p>
+      ${frasiHTML}
+    </div>
+  `
 }
 
 function mostraMessaggioVittoriaEnigma5() {
@@ -1162,97 +1230,118 @@ function mostraMessaggioVittoriaEnigma5() {
 }
 
 function mostraEnigma5() {
-  if (!puzzleGiaCreato) {
-    creaPuzzle()
-    puzzleGiaCreato = true
+  if (frasiRisolteEnigma5.length !== frasiEnigma5.length) {
+    creaEnigma5()
   }
-  disegnaPuzzle()
+  disegnaEnigma5()
 
-  if (puzzleCompletato) {
+  if (enigma5Completato) {
     mostraMessaggioVittoriaEnigma5()
   }
 }
 
-function gestisciClickTessera(elementoTessera) {
-  const indice = Number(elementoTessera.dataset.indice)
-  const indiceVuoto = puzzleStato.indexOf(null)
+function gestisciClickOpzioneFrase(elementoOpzione) {
+  const indiceFrase = Number(elementoOpzione.dataset.frase)
+  const indiceOpzione = Number(elementoOpzione.dataset.opzione)
 
-  const adiacenti = posizioniAdiacenti(indiceVuoto)
-  if (!adiacenti.includes(indice)) return // non è adiacente al vuoto: click ignorato
+  if (indiceOpzione === frasiEnigma5[indiceFrase].corretta) {
+    frasiRisolteEnigma5[indiceFrase] = true
+  } else {
+    erroriEnigma5[indiceFrase].push(indiceOpzione)
+  }
+  disegnaEnigma5()
 
-  puzzleStato[indiceVuoto] = puzzleStato[indice]
-  puzzleStato[indice] = null
-  disegnaPuzzle()
-
-  const risolto = puzzleStato.every(function (valore, i) {
-    if (i === 8) return valore === null
-    return valore === i + 1
-  })
-
-  if (risolto) {
-    puzzleCompletato = true
+  const tutteRisolte = frasiRisolteEnigma5.every(function (risolta) { return risolta })
+  if (tutteRisolte && !enigma5Completato) {
+    enigma5Completato = true
     setTimeout(function () {
       mostraMessaggioVittoriaEnigma5()
-    }, 400)
+    }, 500)
   }
 }
 
 // =============================================================================
-// ENIGMA 6 (parole nascoste): una serie di parole con le lettere mescolate,
-// da ricostruire cliccandole nell'ordine giusto.
+// ENIGMA 6 (cassaforte): una vera manopola circolare, da far girare
+// trascinandola col mouse o col dito (Pointer Event, come il puzzle
+// dell'Enigma 1). Sotto la freccia fissa in alto c'è sempre un numero da 0 a
+// 99: si porta il numero giusto sotto la freccia, poi si preme "Conferma".
+// La combinazione va inserita nell'ordine giusto: se se ne sbaglia una, la
+// serie riparte da capo, come in una cassaforte vera.
 //
-// NOTA IMPORTANTE: un vero cruciverba (griglia con parole incrociate e
-// indizi numerati) è molto più complesso da costruire in vanilla JS — per
-// restare nei tempi ho implementato questa versione semplificata (lettere
-// mescolate, non griglia incrociata). Se vuoi il cruciverba vero lo
-// costruiamo come step successivo, ha senso solo se resta tempo a fine lista.
-//
-// *** DA PERSONALIZZARE ***: le parole in "paroleNascoste" (tutte MAIUSCOLE,
-// senza spazi), e il testo del messaggio finale.
+// Combinazione: 20 / 10 / 20 / 21. Per cambiarla basta modificare
+// "combinazioneEnigma6".
 // =============================================================================
 
-const paroleNascoste = [
-  { soluzione: 'PAROLA1' },
-  { soluzione: 'PAROLA2' },
-  { soluzione: 'PAROLA3' }
-]
+const combinazioneEnigma6 = [20, 10, 20, 21]
 
-let indiceParolaCorrente = 0
-let lettereMescolate = []
-let tentativoAttuale = []
-let parolaInizializzata = false
-let paroleCompletate = false
+let angoloManopola = 0 // rotazione totale in gradi (può superare 360)
+let passoCassaforte = 0 // quanti numeri della combinazione sono già stati inseriti
+let messaggioCassaforte = ''
+let ultimaDirezioneManopola = 0 // direzione dell'ultimo movimento: 1 = destra (senso orario), -1 = sinistra
+let enigma6Completato = false
 
-function mescolaLettereParola(parola) {
-  const lettere = parola.split('').map(function (lettera, indice) {
-    return { id: indice, lettera: lettera }
-  })
-  return mescola(lettere)
+// Come in una cassaforte vera, i numeri vanno inseriti girando da un lato
+// alternato: il primo verso destra (senso orario), il secondo verso sinistra,
+// il terzo di nuovo a destra, e così via.
+function direzioneRichiesta() {
+  return passoCassaforte % 2 === 0 ? 1 : -1
 }
 
-function iniziaParolaCorrente() {
-  const parola = paroleNascoste[indiceParolaCorrente].soluzione
-  lettereMescolate = mescolaLettereParola(parola)
-  tentativoAttuale = []
+function testoDirezione() {
+  const numero = passoCassaforte + 1
+  const totale = combinazioneEnigma6.length
+  return direzioneRichiesta() === 1
+    ? `Numero ${numero} di ${totale}: gira verso destra &#8635;`
+    : `Numero ${numero} di ${totale}: gira verso sinistra &#8634;`
 }
 
-function disegnaParolaNascosta() {
-  const lettereHTML = lettereMescolate.map(function (l) {
-    const classeUsata = tentativoAttuale.includes(l.id) ? 'usata' : ''
-    return `<div class="lettera-tile ${classeUsata}" data-id="${l.id}">${l.lettera}</div>`
-  }).join('')
+// Il numero sotto la freccia: la manopola ha 100 numeri, uno ogni 3,6 gradi,
+// disposti in senso orario; girando la manopola in senso orario i numeri
+// scorrono sotto la freccia in ordine decrescente (come nelle casseforti vere).
+function numeroSottoFreccia() {
+  const posizione = Math.round(-angoloManopola / 3.6)
+  return ((posizione % 100) + 100) % 100
+}
 
-  const tentativoTesto = tentativoAttuale.map(function (id) {
-    return lettereMescolate.find(function (l) {
-      return l.id === id
-    }).lettera
+// Disegna in SVG il disco della manopola: 100 tacche, e un numero ogni 10.
+function disegnaDiscoManopola() {
+  let elementi = ''
+  for (let n = 0; n < 100; n++) {
+    const angolo = n * 3.6
+    const principale = n % 10 === 0
+    const media = n % 5 === 0
+    const lunghezza = principale ? 20 : (media ? 14 : 8)
+    elementi += `<line x1="150" y1="12" x2="150" y2="${12 + lunghezza}" transform="rotate(${angolo} 150 150)" stroke-width="${principale ? 2.5 : 1.2}" />`
+    if (principale) {
+      elementi += `<text x="150" y="52" text-anchor="middle" transform="rotate(${angolo} 150 150)">${n}</text>`
+    }
+  }
+  return `
+    <svg viewBox="0 0 300 300" class="disco-cassaforte" aria-hidden="true">
+      <circle cx="150" cy="150" r="146" class="disco-fondo" />
+      <circle cx="150" cy="150" r="88" class="disco-centro" />
+      <g class="disco-tacche">${elementi}</g>
+    </svg>
+  `
+}
+
+function disegnaCassaforte() {
+  const puntiHTML = combinazioneEnigma6.map(function (_, i) {
+    return `<span class="punto-cassaforte${i < passoCassaforte ? ' acceso' : ''}"></span>`
   }).join('')
 
   document.querySelector('#app').innerHTML = `
-    <div class="parola-container">
-      <p class="progresso-parole">Parola ${indiceParolaCorrente + 1} di ${paroleNascoste.length}</p>
-      <div class="tentativo-attuale">${tentativoTesto}</div>
-      <div class="lettere-grid">${lettereHTML}</div>
+    <div class="cassaforte-container">
+      <p class="istruzioni-cassaforte">Trascina la manopola, porta il numero giusto sotto la freccia girando dal lato indicato, poi premi Conferma. Ascolta i click: più sei vicino, più diventano acuti e forti</p>
+      <div class="cassaforte${enigma6Completato ? ' aperta' : ''}">
+        <div class="punti-cassaforte">${puntiHTML}</div>
+        <p class="direzione-cassaforte">${enigma6Completato ? '' : testoDirezione()}</p>
+        <div class="freccia-fissa-cassaforte"></div>
+        <div class="manopola-cassaforte" style="transform: rotate(${angoloManopola}deg);">${disegnaDiscoManopola()}</div>
+        <div class="numero-attuale-cassaforte">${String(numeroSottoFreccia()).padStart(2, '0')}</div>
+      </div>
+      <p class="messaggio-cassaforte">${enigma6Completato ? 'Click! La cassaforte si è aperta' : messaggioCassaforte}</p>
+      ${enigma6Completato ? '' : '<button class="conferma-cassaforte">Conferma</button>'}
     </div>
   `
 }
@@ -1270,56 +1359,162 @@ function mostraMessaggioVittoriaEnigma6() {
 }
 
 function mostraEnigma6() {
-  if (!parolaInizializzata) {
-    iniziaParolaCorrente()
-    parolaInizializzata = true
-  }
-  disegnaParolaNascosta()
+  messaggioCassaforte = ''
+  ultimaDirezioneManopola = 0
+  disegnaCassaforte()
 
-  if (paroleCompletate) {
+  if (enigma6Completato) {
     mostraMessaggioVittoriaEnigma6()
   }
 }
 
-function gestisciClickLettera(elementoLettera) {
-  const id = Number(elementoLettera.dataset.id)
-  if (tentativoAttuale.includes(id)) return // lettera già usata nel tentativo corrente
+function gestisciConfermaCassaforte() {
+  if (enigma6Completato) return
 
-  tentativoAttuale.push(id)
-  disegnaParolaNascosta()
-
-  const soluzione = paroleNascoste[indiceParolaCorrente].soluzione
-
-  if (tentativoAttuale.length === soluzione.length) {
-    const tentativoTesto = tentativoAttuale.map(function (idLettera) {
-      return lettereMescolate.find(function (l) {
-        return l.id === idLettera
-      }).lettera
-    }).join('')
-
-    if (tentativoTesto === soluzione) {
-      indiceParolaCorrente = indiceParolaCorrente + 1
-
-      if (indiceParolaCorrente >= paroleNascoste.length) {
-        paroleCompletate = true
-        setTimeout(function () {
-          mostraMessaggioVittoriaEnigma6()
-        }, 400)
-      } else {
-        setTimeout(function () {
-          iniziaParolaCorrente()
-          disegnaParolaNascosta()
-        }, 400)
-      }
-    } else {
-      // parola sbagliata: svuota il tentativo e ricomincia la stessa parola
-      setTimeout(function () {
-        tentativoAttuale = []
-        disegnaParolaNascosta()
-      }, 600)
-    }
+  if (numeroSottoFreccia() !== combinazioneEnigma6[passoCassaforte]) {
+    passoCassaforte = 0
+    messaggioCassaforte = 'Numero sbagliato: la serie riparte da capo'
+  } else if (ultimaDirezioneManopola !== direzioneRichiesta()) {
+    passoCassaforte = 0
+    messaggioCassaforte = 'Numero giusto, ma hai girato dal lato sbagliato: la serie riparte da capo'
+  } else {
+    passoCassaforte++
+    messaggioCassaforte = 'Click! Numero giusto'
   }
+  ultimaDirezioneManopola = 0 // il numero successivo va girato di nuovo da zero
+
+  if (passoCassaforte === combinazioneEnigma6.length) {
+    enigma6Completato = true
+    disegnaCassaforte()
+    setTimeout(function () {
+      mostraMessaggioVittoriaEnigma6()
+    }, 900)
+    return
+  }
+
+  disegnaCassaforte()
 }
+
+// --- Rotazione della manopola trascinandola (mouse, dito o penna) ---
+// Come per il puzzle, questi listener sono registrati una sola volta e
+// controllano da soli, guardando il DOM, se la manopola è davvero a schermo.
+
+let trascinamentoManopola = null // { centroX, centroY, angoloPrecedente }
+
+// --- Suoni (indizi) ---
+// Ogni volta che la manopola passa su un nuovo numero si sente un "click".
+// Più si è vicini al numero giusto, più il click è acuto e forte; sul numero
+// esatto si sente un "clunk" diverso. I suoni sono generati al volo con la
+// Web Audio API (nessun file audio da aggiungere). Su telefono (se supportato)
+// c'è anche una breve vibrazione quando si è vicini.
+
+let contestoAudio = null
+let ultimoNumeroManopola = 0
+
+function preparaAudio() {
+  if (!contestoAudio) {
+    const ContestoAudio = window.AudioContext || window.webkitAudioContext
+    if (!ContestoAudio) return
+    contestoAudio = new ContestoAudio()
+  }
+  if (contestoAudio.state === 'suspended') contestoAudio.resume()
+}
+
+function suonaNota(frequenza, volume, durata, tipo) {
+  const inizio = contestoAudio.currentTime
+  const oscillatore = contestoAudio.createOscillator()
+  const guadagno = contestoAudio.createGain()
+  oscillatore.type = tipo
+  oscillatore.frequency.value = frequenza
+  guadagno.gain.setValueAtTime(volume, inizio)
+  guadagno.gain.exponentialRampToValueAtTime(0.0001, inizio + durata)
+  oscillatore.connect(guadagno)
+  guadagno.connect(contestoAudio.destination)
+  oscillatore.start(inizio)
+  oscillatore.stop(inizio + durata)
+}
+
+function suonoNumeroManopola(numero) {
+  if (!contestoAudio) return
+
+  const bersaglio = combinazioneEnigma6[passoCassaforte]
+  const differenza = Math.abs(numero - bersaglio)
+  const distanza = Math.min(differenza, 100 - differenza) // la manopola è circolare
+
+  if (distanza === 0) {
+    // numero esatto: un "clunk" grave seguito da un tintinnio acuto
+    suonaNota(160, 0.35, 0.14, 'triangle')
+    suonaNota(1100, 0.18, 0.2, 'sine')
+    if (navigator.vibrate) navigator.vibrate([30, 40, 30])
+    return
+  }
+
+  // vicinanza da 0 (lontano) a 1 (a un passo): cresce solo negli ultimi ~20 numeri
+  const vicinanza = Math.pow(Math.max(0, 1 - distanza / 20), 2)
+  suonaNota(300 + vicinanza * 900, 0.03 + vicinanza * 0.14, 0.04, 'square')
+  if (vicinanza > 0.5 && navigator.vibrate) navigator.vibrate(10)
+}
+
+function angoloPuntatore(event, centroX, centroY) {
+  return Math.atan2(event.clientY - centroY, event.clientX - centroX) * 180 / Math.PI
+}
+
+document.addEventListener('pointerdown', function (event) {
+  const manopola = event.target.closest('.manopola-cassaforte')
+  if (!manopola || enigma6Completato) return
+
+  preparaAudio() // il browser permette l'audio solo dopo un gesto dell'utente
+  ultimoNumeroManopola = numeroSottoFreccia()
+
+  // Il centro non cambia anche se la manopola è ruotata.
+  const rettangolo = manopola.getBoundingClientRect()
+  const centroX = rettangolo.left + rettangolo.width / 2
+  const centroY = rettangolo.top + rettangolo.height / 2
+
+  trascinamentoManopola = {
+    centroX: centroX,
+    centroY: centroY,
+    angoloPrecedente: angoloPuntatore(event, centroX, centroY)
+  }
+})
+
+document.addEventListener('pointermove', function (event) {
+  if (!trascinamentoManopola) return
+
+  const manopola = document.querySelector('.manopola-cassaforte')
+  if (!manopola) {
+    trascinamentoManopola = null
+    return
+  }
+
+  const angoloAttuale = angoloPuntatore(event, trascinamentoManopola.centroX, trascinamentoManopola.centroY)
+  let differenza = angoloAttuale - trascinamentoManopola.angoloPrecedente
+  // Evita il "salto" quando si passa da +180° a -180°.
+  if (differenza > 180) differenza -= 360
+  if (differenza < -180) differenza += 360
+
+  angoloManopola += differenza
+  if (differenza > 0.3) ultimaDirezioneManopola = 1
+  else if (differenza < -0.3) ultimaDirezioneManopola = -1
+  trascinamentoManopola.angoloPrecedente = angoloAttuale
+
+  // Aggiorniamo il DOM sul posto (niente ridisegno completo, altrimenti
+  // il trascinamento verrebbe interrotto a ogni movimento).
+  manopola.style.transform = `rotate(${angoloManopola}deg)`
+  const numero = numeroSottoFreccia()
+  document.querySelector('.numero-attuale-cassaforte').textContent = String(numero).padStart(2, '0')
+
+  if (numero !== ultimoNumeroManopola) {
+    ultimoNumeroManopola = numero
+    suonoNumeroManopola(numero)
+  }
+})
+
+function terminaTrascinamentoManopola() {
+  trascinamentoManopola = null
+}
+document.addEventListener('pointerup', terminaTrascinamentoManopola)
+document.addEventListener('pointercancel', terminaTrascinamentoManopola)
 
 // =============================================================================
 // UNICO listener globale su #app: siccome #app non viene mai distrutto
@@ -1337,12 +1532,6 @@ document.querySelector('#app').addEventListener('click', function (event) {
   // click sul bottone "Verifica" del codice finale, nella home
   if (event.target.closest('.controlla-codice-finale')) {
     controllaCodiceFinale()
-    return
-  }
-
-  // click sul bottone "Rivedi la pagina finale", nella home (solo se già sbloccata)
-  if (event.target.closest('.vai-pagina-finale')) {
-    mostraPaginaFinale()
     return
   }
 
@@ -1407,17 +1596,16 @@ document.querySelector('#app').addEventListener('click', function (event) {
     return
   }
 
-  // Enigma 5: click su una tessera del puzzle scorrevole
-  const elementoTessera = event.target.closest('.tessera')
-  if (elementoTessera) {
-    gestisciClickTessera(elementoTessera)
+  // Enigma 5: click su un'opzione di una frase da completare
+  const elementoOpzioneFrase = event.target.closest('.opzione-frase')
+  if (elementoOpzioneFrase && !elementoOpzioneFrase.disabled) {
+    gestisciClickOpzioneFrase(elementoOpzioneFrase)
     return
   }
 
-  // Enigma 6: click su una lettera
-  const elementoLettera = event.target.closest('.lettera-tile')
-  if (elementoLettera) {
-    gestisciClickLettera(elementoLettera)
+  // Enigma 6: click su "Conferma" della cassaforte
+  if (event.target.closest('.conferma-cassaforte')) {
+    gestisciConfermaCassaforte()
     return
   }
 })
@@ -1456,15 +1644,19 @@ document.querySelector('.hub-nav').addEventListener('click', function (event) {
   if (link.getAttribute('href') === 'page5') {
     toggleVisibilitaLettoreCanzone()
   }
-  if (link.getAttribute('href') === 'page6') {
+  if (link.getAttribute('href') === 'page6' && codiceSbloccato) {
     mostraViaggi()
   }
-  if (link.getAttribute('href') === 'page7') {
+  if (link.getAttribute('href') === 'page7' && codiceSbloccato) {
     mostraCose()
+  }
+  if (link.getAttribute('href') === 'page9' && codiceSbloccato) {
+    mostraRegalo()
   }
   if (link.getAttribute('href') === 'page8') {
     mostraQuantoMiConosci()
   }
 })
 
+aggiornaVisibilitaVociRiservate()
 mostraHub()
